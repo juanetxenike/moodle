@@ -37,3 +37,4 @@ $string['pluginname'] = 'Course completion';
 $string['privacy:metadata'] = 'The Course completion report only shows data stored in other locations.';
 $string['eventreportviewed'] = 'Completion report viewed';
 $string['eventuserreportviewed'] = 'Completion user report viewed';
+$string['pdfdownload'] = "Download PDF";

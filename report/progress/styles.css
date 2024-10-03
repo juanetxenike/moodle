@@ -64,3 +64,17 @@
 #completion-progress .icon {
     margin-left: 0.5rem;
 }
+
+#completion-progress td {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+}
+
+#page-report-progress-index .export-actions {
+    text-align: center;
+    list-style: none;
+}
+
+.symbol {
+    font-size: 10px;
+}
