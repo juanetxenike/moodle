@@ -36,3 +36,11 @@
     margin-top: 100%;
 }
 /*rtl:end:ignore*/
+#completion-progress td {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+}
+
+.symbol {
+    font-size: 10px;
+}

@@ -1,0 +1,132 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_completion/table
+
+    TODO describe template table
+
+    Example context (json):
+    {
+    }
+}}
+<h1>{{ title }}</h1>
+<p>{{ totalparticipants }}</p>
+<br /><br />
+<table 
+    id="completion-progress" 
+    class="table table-bordered generaltable flexible boxaligncenter completionreport">
+    <thead>
+        <!-- CRITERIA HEADERS-->
+        <tr style="vertical-align: top">
+            <th scope="row" class="rowheader" colspan="{{ leftcols }}">
+                {{#str}}criteriagroup,completion{{/str}}
+            </th>
+            {{#criteriaheaders}}
+                <th scope="col" colspan="{{ colcount }}" class="colheader criteriagroup">
+                    {{currentgrouptypetitle}}
+                </th>
+            {{/criteriaheaders}}
+            <th scope="col" style="text-align: center;">{{#str}}course{{/str}}</th>
+        </tr>
+        <!-- END CRITERIA HEADERS-->
+        <!-- CRITERIA METHODS HEADERS-->
+        <tr style="vertical-align: top">
+            <th scope="row" class="rowheader" colspan="{{ leftcols }}">{{#str}}aggregationmethod, completion{{/str}}</th>
+            {{#criteriamethodheaders}}
+                <th scope="col" colspan="{{ colcount }}"class="colheader aggheader">{{method}}</th>
+            {{/criteriamethodheaders}}
+            <th scope="col" >{{courseaggregationheader}}</th>
+        </tr>
+        <!-- END CRITERIA METHODS HEADERS-->
+        <!-- CRITERIA VALUES HEADERS-->
+        <tr>
+            <th scope="row" colspan="{{ leftcols }}">{{#str}}criteria, completion{{/str}}</th>
+            {{#criteria}}
+                <th scope="col" class="colheader aggheader aggcriteriacourse">
+                    <div class="rotated-text-container">
+                        <span class="rotated-text">
+                            {{.}}
+                        </span>
+                    </div>
+                </th>
+            {{/criteria}}
+            <th scope="col">
+                <div class="rotated-text-container">
+                    <span class="rotated-text">
+                        {{#str}}coursecomplete, completion{{/str}}
+                    </span>
+                </div>
+            </th>
+        </tr>
+        <!-- END CRITERIA VALUES HEADERS-->
+        <!-- ICONS HEADERS-->
+        <tr>
+            <th scope="row" class="rowheader">{{#str}}firstname{{/str}} {{#str}}lastname{{/str}}</th>
+            {{#fields}}
+                <th scope="col" class="colheader criterianame">{{.}}</th>
+            {{/fields}}
+            {{#criteriaicons}}
+                <th scope="col" class="colheader criterianame criteriaicon">
+                    {{#ishtml}}
+                    <a href="{{url}}" title="{{title}}">
+                        {{{icon}}}
+                    </a>
+                    {{/ishtml}}
+                </th>
+            {{/criteriaicons}}
+            <th scope="col">{{{coursecompleteicon}}}</th>
+        </tr>
+        <!-- END ICONS HEADERS-->
+        <!-- SECTIONS HEADERS -->
+        <tr style="background-color: #dedede;">
+            <th scope="row" class="rowheader" colspan="{{ leftcols }}">
+                <strong>{{#str}}sections{{/str}}</strong>
+            </th>
+            {{#sectionheaders}}
+                <th scope="col" class="colheader criterianame" colspan="{{ colcount }}">{{sectionname}}</th>
+            {{/sectionheaders}}
+        </tr>
+        <!-- END SECTIONS HEADERS -->
+    </thead>
+    <tbody>
+    <!-- COMPLETION PROGRESS DATA -->
+    {{#users}}
+        <tr>
+            <th scope="row">{{fullname}}</th>
+            {{#fields}}
+                <td>{{.}}</td>
+            {{/fields}}
+            {{#criteria}}
+                <td class="completion-progresscell criteriaicon">
+                    <span class="symbol" style="font-family: 'zapfdingbats, symbol'">{{{describe}}}</span>
+                    {{date}}
+                </td>
+            {{/criteria}}
+            <td class="completion-progresscell">
+                <span class="symbol" style="font-family: 'zapfdingbats, symbol'">
+                    {{{coursecomplete.description}}}
+                </span> 
+                {{{coursecomplete.date}}}
+            </td>
+        </tr>
+    {{/users}}
+    <!-- END COMPLETION PROGRESS DATA -->
+    </tbody>
+</table>
+{{#ishtml}}
+{{> report_completion/links }}
+{{/ishtml}}
