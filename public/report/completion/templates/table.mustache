@@ -32,7 +32,7 @@
     <thead>
         <!-- CRITERIA HEADERS-->
         <tr style="vertical-align: top">
-            <th scope="row" class="rowheader" colspan="{{ leftcols }}">
+            <th scope="row" class="rowheader" colspan="{{leftcols}}">
                 {{#str}}criteriagroup,completion{{/str}}
             </th>
             {{#criteriaheaders}}
@@ -45,16 +45,16 @@
         <!-- END CRITERIA HEADERS-->
         <!-- CRITERIA METHODS HEADERS-->
         <tr style="vertical-align: top">
-            <th scope="row" class="rowheader" colspan="{{ leftcols }}">{{#str}}aggregationmethod, completion{{/str}}</th>
+            <th scope="row" class="rowheader" colspan="{{leftcols}}">{{#str}}aggregationmethod, completion{{/str}}</th>
             {{#criteriamethodheaders}}
-                <th scope="col" colspan="{{ colcount }}"class="colheader aggheader">{{method}}</th>
+                <th scope="col" colspan="{{colcount}}"class="colheader aggheader">{{method}}</th>
             {{/criteriamethodheaders}}
             <th scope="col" >{{courseaggregationheader}}</th>
         </tr>
         <!-- END CRITERIA METHODS HEADERS-->
         <!-- CRITERIA VALUES HEADERS-->
         <tr>
-            <th scope="row" colspan="{{ leftcols }}">{{#str}}criteria, completion{{/str}}</th>
+            <th scope="row" colspan="{{leftcols}}">{{#str}}criteria, completion{{/str}}</th>
             {{#criteria}}
                 <th scope="col" class="colheader aggheader aggcriteriacourse">
                     <div class="rotated-text-container">
@@ -93,11 +93,11 @@
         <!-- END ICONS HEADERS-->
         <!-- SECTIONS HEADERS -->
         <tr style="background-color: #dedede;">
-            <th scope="row" class="rowheader" colspan="{{ leftcols }}">
+            <th scope="row" class="rowheader" colspan="{{leftcols}}">
                 <strong>{{#str}}sections{{/str}}</strong>
             </th>
             {{#sectionheaders}}
-                <th scope="col" class="colheader criterianame" colspan="{{ colcount }}">{{sectionname}}</th>
+                <th scope="col" class="colheader criterianame" colspan="{{colcount}}">{{sectionname}}</th>
             {{/sectionheaders}}
         </tr>
         <!-- END SECTIONS HEADERS -->

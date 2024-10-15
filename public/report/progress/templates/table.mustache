@@ -49,18 +49,24 @@
                 {{/formattedactivities}}
             </tr>
             <tr style="background-color: #dedede;">
-                <th scope="row" colspan="2">
+                <th scope="col">
                     <strong>{{#str}}sections{{/str}}</strong>
                 </th>
+                {{#fields}}
+                    <th scope="col"></th>
+                {{/fields}}
                 {{#sectionheaders}}
-                    <th scope="col" colspan="{{ colcount }}">{{sectionname}}</th>
+                    <th scope="col" colspan="{{colcount}}">{{sectionname}}</th>
                 {{/sectionheaders}}
             </tr>
             <tr>
-                <th scope="row" colspan="2"><strong>{{#str}}activities{{/str}}</strong></th>
+                <th scope="col"><strong>{{#str}}activities{{/str}}</strong></th>
+                {{#fields}}
+                    <th scope="col"></th>
+                {{/fields}}
                 {{#activityicons}}
                     <th scope="col" class="colheader criterianame criteriaicon">
-                        {{#isHtml}}<a href="{{ url }}" title="{{ title }}">{{/isHtml}}
+                        {{#isHtml}}<a href="{{url}}" title="{{title}}">{{/isHtml}}
                             {{{icon}}}
                         {{#isHtml}}</a>{{/isHtml}}
                     </th>
@@ -75,7 +81,7 @@
                         <td>{{.}}</td>
                     {{/extrafields}}
                     {{#activityprogress}}
-                        <td colspan="{{ colcount }}">
+                        <td colspan="{{colcount}}">
                             <span class="symbol" style="font-family: 'zapfdingbats, symbol'">{{{describe}}}</span>
                             {{date}}
                         </td>

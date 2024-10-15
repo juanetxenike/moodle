@@ -27,7 +27,6 @@ use report_completion\output\report;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Display the completion report
      *
@@ -36,7 +35,8 @@ class renderer extends plugin_renderer_base {
      */
     public function render_completion_report(report $report) {
         return $this->render_from_template(
-                    'report_completion/table',
-                    $report->export_for_template($this));
+            'report_completion/table',
+            $report->export_for_template($this)
+        );
     }
 }

@@ -18,8 +18,11 @@ namespace report_completion\output;
 
 use completion_info;
 use core\context\course;
+use core\output\renderable;
 use core\output\renderer_base;
+use core\output\templatable;
 use report_completion\engine;
+use core\url as moodle_url;
 
 /**
  * Class report
@@ -28,8 +31,7 @@ use report_completion\engine;
  * @copyright  2024 onwards WIDE Services {@link https://www.wideservices.gr}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report implements \renderable, \templatable {
-
+class report implements renderable, templatable {
     /**
      * @var int $courseid The ID of the course for which the report is generated.
      */
@@ -39,7 +41,7 @@ class report implements \renderable, \templatable {
      */
     private $format;
     /**
-     * @var context $context The context in which the report is being generated.
+     * @var course $context The context in which the report is being generated.
      */
     private $context;
     /**
@@ -78,7 +80,6 @@ class report implements \renderable, \templatable {
      * @var mixed $progress The progress of the report.
      */
     private $progress;
-
     /**
      * @var object $course The course object associated with the report.
      */
@@ -94,12 +95,13 @@ class report implements \renderable, \templatable {
      * @param mixed $progress
      */
     public function __construct(
-            int $courseid,
-            string $format,
-            int $totalparticipants,
-            int $leftcols,
-            $completion,
-            $progress) {
+        int $courseid,
+        string $format,
+        int $totalparticipants,
+        int $leftcols,
+        $completion,
+        $progress
+    ) {
         $this->courseid = $courseid;
         $this->format = $format;
         $this->context = course::instance($courseid);
@@ -113,7 +115,7 @@ class report implements \renderable, \templatable {
         $this->completion = new completion_info($this->course);
         $this->criteria = array_merge(
             $this->completion->get_criteria(COMPLETION_CRITERIA_TYPE_COURSE),
-            $completion->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY),
+            $this->completion->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY),
             array_filter(
                 $this->completion->get_criteria(),
                 fn($criterion) => !in_array($criterion->criteriatype, [
@@ -134,24 +136,47 @@ class report implements \renderable, \templatable {
         global $OUTPUT;
         return [
             'title' => get_string('coursecompletion'),
-            'totalparticipants' => get_string('allparticipants'). ": {$this->totalparticipants}",
+            'totalparticipants' => get_string('allparticipants') . ": {$this->totalparticipants}",
             'leftcols' => $this->leftcols == '' ? 1 : $this->leftcols,
             'criteriaheaders' => $this->engine->criteria_types(),
             'criteriamethodheaders' => $this->engine->criteria_methods(),
             'sectionheaders' => $this->engine->section_headers(),
-            'criteriaicons' => $this->engine->criteria_icons($this->criteria),
+            'criteriaicons' => $this->engine->criteria_icons(),
             'courseaggregationheader' => $this->completion->get_aggregation_method() == 1 ?
                                             get_string('all') : get_string('any'),
             'fields' => $this->engine->fieldsarray(),
             'criteria' => $this->engine->criteria_titles(),
             'users' => array_values($this->engine->get_users($this->progress)),
             'ishtml' => ($this->format != 'csv' && $this->format != 'pdf' && $this->format != 'excelcsv') ? true : false,
-            'csvurl' => (new \moodle_url('/report/completion/index.php', ['course' => $this->courseid, 'format' => 'csv']))->out(),
-            'excelurl' => new \moodle_url('/report/completion/index.php', ['course' => $this->courseid, 'format' => 'excelcsv']),
-            'pdfurl' => new \moodle_url('/report/completion/index.php', ['course' => $this->courseid, 'format' => 'pdf']),
-            'coursecompleteicon' => ($this->format != 'csv' && $this->format != 'pdf' && $this->format != 'excelcsv')
-                                        ? $OUTPUT->pix_icon('i/course', get_string('coursecomplete', 'completion'))
-                                        : get_string('coursecomplete', 'completion'),
+            'csvurl' => (new moodle_url(
+                '/report/completion/index.php',
+                [
+                    'course' => $this->courseid,
+                    'format' => 'csv',
+                ]
+            ))->out(),
+            'excelurl' => new moodle_url(
+                '/report/completion/index.php',
+                [
+                    'course' => $this->courseid,
+                    'format' => 'excelcsv',
+                ]
+            ),
+            'pdfurl' => new moodle_url(
+                '/report/completion/index.php',
+                [
+                    'course' => $this->courseid,
+                    'format' => 'pdf',
+                ]
+            ),
+            'coursecompleteicon' => ($this->format != 'csv'
+                        && $this->format != 'pdf'
+                        && $this->format != 'excelcsv')
+                            ? $OUTPUT->pix_icon(
+                                'i/course',
+                                get_string('coursecomplete', 'completion')
+                            )
+                            : get_string('coursecomplete', 'completion'),
         ];
     }
 }

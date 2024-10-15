@@ -16,6 +16,8 @@
 
 namespace report_progress;
 use report_progress\local\helper;
+use core\url as moodle_url;
+use core_user\fields;
 
 /**
  * Class engine
@@ -25,7 +27,16 @@ use report_progress\local\helper;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class engine {
-
+    /**
+     * Retrieves extra fields based on the provided context.
+     *
+     * @param mixed $context The context for which extra fields are to be retrieved.
+     * @return array An array of extra fields.
+     */
+    public function extrafields($context): array {
+        $userfields = fields::for_identity($context);
+        return $userfields->get_required_fields([fields::PURPOSE_IDENTITY]);
+    }
     /**
      * Formats the given activities.
      *
@@ -33,14 +44,14 @@ class engine {
      * @return mixed The formatted activities.
      */
     public function formatted_activities($activities) {
-        return array_map(function($activity) {
+        return array_map(function ($activity) {
             $datepassed = $activity->completionexpected && $activity->completionexpected <= time();
             $datetext = $activity->completionexpected
                 ? userdate($activity->completionexpected, get_string('strftimedate', 'langconfig'))
                 : '';
 
             // Some names (labels) come URL-encoded and can be very long, so shorten them.
-            $displayname = ucfirst($activity->modname) .' '
+            $displayname = ucfirst($activity->modname) . ' '
                             . format_string($activity->name, true, ['context' => $activity->context]);
             $shortenedname = shorten_text($displayname);
 
@@ -71,7 +82,7 @@ class engine {
 
         // Count the occurrences of each "section".
         // Since we forced the former array to have unique values, we can now get the count of each "method" value.
-        $sectioncounts = array_map(function($activity) {
+        $sectioncounts = array_map(function ($activity) {
             return [
                 'type' => get_section_name($activity->course, $activity->sectionnum),
             ];
@@ -81,7 +92,7 @@ class engine {
         // Map the unique "section" values to include the colcount.
         // The colcount will be the number of times the "section" value appears in the $criteriamethods array.
         // This will allow us to span a column for each "section" value along the number of times it appears.
-        return array_map(function($section) use ($sectioncountsarray) {
+        return array_map(function ($section) use ($sectioncountsarray) {
             return [
                 'sectionname' => $section['sectionname'],
                 'colcount' => $sectioncountsarray[$section['sectionname']],
@@ -103,7 +114,7 @@ class engine {
             $iconlink = '';
             $iconalt = ''; // Required.
             $iconattributes = ['class' => 'icon'];
-            $iconlink = new \moodle_url('/mod/'.$activity->modname.'/view.php', ['id' => $activity->id]);
+            $iconlink = new moodle_url('/mod/' . $activity->modname . '/view.php', ['id' => $activity->id]);
             $icontitle = format_string($activity->name, true, ['context' => $activity->context]);
             $activityicons[] = [
                 'icon' => ($format != 'csv' && $format != 'pdf' && $format != 'excelcsv')
@@ -125,8 +136,13 @@ class engine {
      * @param string $format The format in which the progress is being calculated.
      * @return array The calculated progress for each user.
      */
-    public function users_progress(array $progress, object $context,
-                                    array $extrafields, array $activities, string $format) {
+    public function users_progress(
+        array $progress,
+        object $context,
+        array $extrafields,
+        array $activities,
+        string $format
+    ) {
         global $OUTPUT;
         return array_map(function ($user) use ($context, $extrafields, $activities, $format, $OUTPUT) {
             // For each user: Progress for each activity.
@@ -140,32 +156,32 @@ class engine {
                 $date = ($state != 0) ? userdate($thisprogress->timemodified, '%a %d-%b-%y %H:%M') : '';
 
                 // Work out how it corresponds to an icon.
-                switch($state){
+                switch ($state) {
                     case COMPLETION_INCOMPLETE:
                         $completiontype = 'n' . ($overrideby ? '-override' : '');
-                    break;
+                        break;
                     case COMPLETION_COMPLETE:
                         $completiontype = 'y' . ($overrideby ? '-override' : '');
-                    break;
+                        break;
                     case COMPLETION_COMPLETE_PASS:
                         $completiontype = 'pass';
-                    break;
+                        break;
                     case COMPLETION_COMPLETE_FAIL:
                         $completiontype = 'fail';
-                    break;
+                        break;
                     default:
                         throw new \UnexpectedValueException('Unexpected state value');
                 }
                 $auto = $activity->completion == COMPLETION_TRACKING_AUTOMATIC;
-                $completionicon = 'completion-'.($auto ? 'auto' : 'manual').'-'.$completiontype;
+                $completionicon = 'completion-' . ($auto ? 'auto' : 'manual') . '-' . $completiontype;
                 $completiontrackingstring = $activity->completion == COMPLETION_TRACKING_AUTOMATIC ? 'auto' : 'manual';
                 $describe = get_string('completion-' . $completiontype, 'completion');
-                $a = new \StdClass;
+                $a = new \StdClass();
                 $a->state = $describe;
                 $fulldescribe = get_string('progress-title', 'completion', $a);
                 $describe = $format == "pdf" ?
-                                        ($completiontype == 'n' ? '6' : '3')
-                                        : $OUTPUT->pix_icon('i/' . $completionicon, $fulldescribe);
+                    ($completiontype == 'n' ? '6' : '3')
+                    : $OUTPUT->pix_icon('i/' . $completionicon, $fulldescribe);
                 return [
                     'date' => $date,
                     'describe' => $describe,
@@ -180,7 +196,7 @@ class engine {
                 'colcount' => 0,
             ];
 
-            $result = array_reduce($activityprogress, function($carry, $item) {
+            $result = array_reduce($activityprogress, function ($carry, $item) {
                 $currentdate = $item['date'];
                 $currentdescribe = $item['describe'];
 
@@ -229,14 +245,14 @@ class engine {
      * @param string $url The URL for the paging bar links.
      * @param int $page The current page number.
      *
-     * @return void
+     * @return string
      */
-    public function pagingbar($course, $sort, $sifirst, $silast, $total, $url, $page) {
+    public function pagingbar($course, $sort, $sifirst, $silast, $total, $url, $page): string {
         global $OUTPUT, $CFG;
         // Build link for paging.
-        $link = $CFG->wwwroot.'/report/completion/index.php?course='.$course->id;
+        $link = $CFG->wwwroot . '/report/completion/index.php?course=' . $course->id;
         if (strlen($sort)) {
-            $link .= '&amp;sort='.$sort;
+            $link .= '&amp;sort=' . $sort;
         }
         $link .= '&amp;start=';
 

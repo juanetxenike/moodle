@@ -31,7 +31,6 @@ use moodle_url;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class engine {
-
     /**
      * @var int $courseid The ID of the course for which the completion report is generated.
      */
@@ -65,7 +64,7 @@ class engine {
      */
     private $criteria;
     /**
-     * @var bool $hasagg Indicates whether the aggregation has been performed.
+     * @var array $hasagg Indicates whether the aggregation has been performed.
      */
     private $hasagg;
 
@@ -133,7 +132,7 @@ class engine {
     public function criteria_types(): array {
         // Filter out repeated "type" values, keeping only the last occurrence.
         // Criteria types will have a list of arrays only with unique values.
-        $criteriatypes = array_values(array_reduce($this->criteria, function(array $acc, $criterion){
+        $criteriatypes = array_values(array_reduce($this->criteria, function (array $acc, $criterion) {
                     $acc[$criterion->criteriatype] = [
                         'type' => $criterion->criteriatype,
                         'title' => $criterion->get_type_title(),
@@ -141,7 +140,7 @@ class engine {
                     return $acc;
         }, []));
         // Since we forced the former array to have unique values, we can now get the count of each "type" value.
-        $typecounts = array_map(function($criterion): array {
+        $typecounts = array_map(function ($criterion): array {
             return [
                 'type' => $criterion->criteriatype,
             ];
@@ -150,7 +149,7 @@ class engine {
         // Map the unique "type" values to include the colcount.
         // The colcount will be the number of times the "type" value appears in the $criteria array.
         // This will allow us to span a column for each "type" value along the number of times it appears.
-        return array_map(function($item) use ($typecountsarray): array {
+        return array_map(function ($item) use ($typecountsarray): array {
             return [
                 'colcount' => $typecountsarray[$item['type']] == '' ? 1 : $typecountsarray[$item['type']],
                 'currentgrouptypetitle' => $item['title'],
@@ -168,7 +167,7 @@ class engine {
         // Criteria types will have a list of arrays only with unique values.
         $completion = $this->completion;
         $hasagg = $this->hasagg;
-        $criteriamethods = array_reduce($this->criteria, function(array $carry, $criterion) use ($completion, $hasagg) {
+        $criteriamethods = array_reduce($this->criteria, function (array $carry, $criterion) use ($completion, $hasagg) {
             // Try load a aggregation method.
             $carry[$criterion->criteriatype] = [
                 'method' => (in_array($criterion->criteriatype, $hasagg)) ?
@@ -181,7 +180,7 @@ class engine {
         }, []);
 
         // Since we forced the former array to have unique values, we can now get the count of each "method" value.
-        $methodcounts = array_map(function($criterion) use($completion, $hasagg): array {
+        $methodcounts = array_map(function ($criterion) use ($completion, $hasagg): array {
             return  [ 'method' => (in_array($criterion->criteriatype, $hasagg)) ?
                         ($completion->get_aggregation_method($criterion->criteriatype) == 1 ?
                             get_string('all')
@@ -193,7 +192,7 @@ class engine {
         // Map the unique "method" values to include the colcount.
         // The colcount will be the number of times the "method" value appears in the $criteriamethods array.
         // This will allow us to span a column for each "method" value along the number of times it appears.
-        return array_map(function($item, $key) use ($methodcountsarray) {
+        return array_map(function ($item, $key) use ($methodcountsarray) {
             return [
                 'colcount' => $methodcountsarray[$item['method']] == '' ? 1 : $methodcountsarray[$item['method']],
                 'method' => $item['method'],
@@ -209,7 +208,7 @@ class engine {
     public function section_headers(): array {
         // Filter out repeated section values, keeping only the last occurrence.
         $modinfo = $this->modinfo;
-        $sectionsarray = array_values(array_reduce($this->criteria, function ($acc, $criterion) use($modinfo) {
+        $sectionsarray = array_values(array_reduce($this->criteria, function ($acc, $criterion) use ($modinfo) {
             if ($criterion->criteriatype == COMPLETION_CRITERIA_TYPE_ACTIVITY) {
                 $activity = $modinfo->cms[$criterion->moduleinstance];
                 $sectionname = get_section_name($activity->course, $activity->sectionnum);
@@ -223,7 +222,7 @@ class engine {
 
         // Count the occurrences of each "section".
         // Since we forced the former array to have unique values, we can now get the count of each "method" value.
-        $sectioncounts = array_map(function($criterion) use($modinfo) {
+        $sectioncounts = array_map(function ($criterion) use ($modinfo) {
             if ($criterion->criteriatype == COMPLETION_CRITERIA_TYPE_ACTIVITY) {
                 $activity = $modinfo->cms[$criterion->moduleinstance];
                 return [
@@ -236,7 +235,7 @@ class engine {
         // Map the unique "section" values to include the colcount.
         // The colcount will be the number of times the "section" value appears in the $criteriamethods array.
         // This will allow us to span a column for each "section" value along the number of times it appears.
-        return array_map(function($section) use ($sectioncountsarray): array {
+        return array_map(function ($section) use ($sectioncountsarray): array {
             return [
                 'sectionname' => $section['sectionname'],
                 'colcount' => $sectioncountsarray[$section['sectionname']] == '' ? 1 : $sectioncountsarray[$section['sectionname']],
@@ -260,29 +259,32 @@ class engine {
             switch ($criterion->criteriatype) {
                 case COMPLETION_CRITERIA_TYPE_ACTIVITY:
                     // Display icon.
-                    $iconlink = $CFG->wwwroot.'/mod/'.$criterion->module.'/view.php?id='.$criterion->moduleinstance;
+                    $iconlink = $CFG->wwwroot . '/mod/' . $criterion->module . '/view.php?id=' . $criterion->moduleinstance;
                     $iconattributes['title'] = $this->modinfo->cms[$criterion->moduleinstance]->get_formatted_name();
                     $iconalt = get_string('modulename', $criterion->module);
-                break;
-
+                    break;
                 case COMPLETION_CRITERIA_TYPE_COURSE:
                     // Load course.
                     $crs = $DB->get_record('course', ['id' => $criterion->courseinstance]);
 
                     // Display icon.
-                    $iconlink = $CFG->wwwroot.'/course/view.php?id='.$criterion->courseinstance;
-                    $iconattributes['title'] = format_string($crs->fullname, true,
-                                                                ['context' => course::instance($crs->id, MUST_EXIST)]);
+                    $iconlink = $CFG->wwwroot . '/course/view.php?id=' . $criterion->courseinstance;
+                    $iconattributes['title'] = format_string(
+                        $crs->fullname,
+                        true,
+                        [
+                            'context' => course::instance($crs->id, MUST_EXIST),
+                        ]
+                    );
                     $iconalt = format_string($crs->shortname, true, ['context' => course::instance($crs->id)]);
-                break;
-
+                    break;
                 case COMPLETION_CRITERIA_TYPE_ROLE:
                     // Load role.
                     $role = $DB->get_record('role', ['id' => $criterion->role]);
 
                     // Display icon.
                     $iconalt = $role->name;
-                break;
+                    break;
             }
 
             // Create icon alt if not supplied.
@@ -305,7 +307,7 @@ class engine {
      * @return array An array of criteria titles.
      */
     public function criteria_titles() {
-        return array_map(function($criterion) {
+        return array_map(function ($criterion) {
             return $criterion->get_title_detailed();
         }, $this->criteria);
     }
@@ -325,14 +327,21 @@ class engine {
         $course = $this->course;
         $format = $this->format;
         $criteria = $this->criteria;
-        return array_map(function($user) use($criteria,
-                                            $completion, $modinfo, $dateformat, $course, $OUTPUT, $format) {
+        return array_map(function ($user) use (
+            $criteria,
+            $completion,
+            $modinfo,
+            $dateformat,
+            $course,
+            $OUTPUT,
+            $format
+        ) {
             // Load course completion.
             $coursecompletion = new completion_completion(['userid' => $user->id, 'course' => $course->id]);
             $coursecompletiontype = $coursecompletion->is_complete() ? 'y' : 'n';
 
-            $coursedescribe = get_string('completion-'.$coursecompletiontype, 'completion');
-            $coursea = new \stdClass;
+            $coursedescribe = get_string('completion-' . $coursecompletiontype, 'completion');
+            $coursea = new \stdClass();
             $coursea->state    = $coursedescribe;
             $coursea->user     = fullname($user);
             $coursea->activity = strip_tags(get_string('coursecomplete', 'completion'));
@@ -341,7 +350,7 @@ class engine {
             return [
                 'fullname' => fullname($user, has_capability('moodle/site:viewfullnames', $this->context)),
                 'fields' => array_map(fn($field) => s($user->{$field}), $this->get_extrafields($course)),
-                'criteria' => array_map(function($criterion) use($user, $completion, $modinfo, $dateformat, $OUTPUT, $format)  {
+                'criteria' => array_map(function ($criterion) use ($user, $completion, $modinfo, $dateformat, $OUTPUT, $format) {
                     $criteriacompletion = $completion->get_user_completion($user->id, $criterion);
                     $iscomplete = $criteriacompletion->is_complete();
                     // Load activity.
@@ -364,8 +373,8 @@ class engine {
                     };
 
                     $auto = $activity->completion == COMPLETION_TRACKING_AUTOMATIC;
-                    $completionicon = 'completion-'.($auto ? 'auto' : 'manual').'-'.$completiontype;
-                    $describe = get_string('completion-'.$completiontype, 'completion');
+                    $completionicon = 'completion-' . ($auto ? 'auto' : 'manual') . '-' . $completiontype;
+                    $describe = get_string('completion-' . $completiontype, 'completion');
 
                     $a = new \stdClass();
                     $a->state = $describe;
@@ -405,13 +414,20 @@ class engine {
      *
      * @return string The HTML for the paging bar.
      */
-    public function pagingbar(object $course, string $sort, string $sifirst,
-                                string $silast, int $total, moodle_url $url, int $start): string {
+    public function pagingbar(
+        object $course,
+        string $sort,
+        string $sifirst,
+        string $silast,
+        int $total,
+        moodle_url $url,
+        int $start
+    ): string {
         global $CFG, $OUTPUT;
         // Build link for paging.
-        $link = $CFG->wwwroot.'/report/completion/index.php?course='.$course->id;
+        $link = $CFG->wwwroot . '/report/completion/index.php?course=' . $course->id;
         if (strlen($sort)) {
-            $link .= '&amp;sort='.$sort;
+            $link .= '&amp;sort=' . $sort;
         }
         $link .= '&amp;start=';
 
@@ -427,7 +443,7 @@ class engine {
         if ($total > COMPLETION_REPORT_PAGE) {
             // Paging bar.
             $pagingbar .= '<div class="paging">';
-            $pagingbar .= get_string('page').': ';
+            $pagingbar .= get_string('page') . ': ';
 
             $sistrings = [];
             if ($sifirst != 'all') {
@@ -436,12 +452,13 @@ class engine {
             if ($silast != 'all') {
                 $sistrings[] = "silast={$silast}";
             }
-            $sistring = !empty($sistrings) ? '&amp;'.implode('&amp;', $sistrings) : '';
+            $sistring = !empty($sistrings) ? '&amp;' . implode('&amp;', $sistrings) : '';
 
             // Display previous link.
             if ($start > 0) {
                 $pstart = max($start - COMPLETION_REPORT_PAGE, 0);
-                $pagingbar .= "(<a class=\"previous\" href=\"{$link}{$pstart}{$sistring}\">".get_string('previous').'</a>)&nbsp;';
+                $pagingbar .= "(<a class=\"previous\" href=\"{$link}{$pstart}{$sistring}\">"
+                                . get_string('previous') . '</a>)&nbsp;';
             }
 
             // Create page links.
@@ -451,7 +468,7 @@ class engine {
                 $curpage++;
 
                 if ($curstart == $start) {
-                    $pagingbar .= '&nbsp;'.$curpage.'&nbsp;';
+                    $pagingbar .= '&nbsp;' . $curpage . '&nbsp;';
                 } else {
                     $pagingbar .= "&nbsp;<a href=\"{$link}{$curstart}{$sistring}\">$curpage</a>&nbsp;";
                 }
@@ -462,7 +479,8 @@ class engine {
             // Display next link.
             $nstart = $start + COMPLETION_REPORT_PAGE;
             if ($nstart < $total) {
-                $pagingbar .= "&nbsp;(<a class=\"next\" href=\"{$link}{$nstart}{$sistring}\">".get_string('next').'</a>)';
+                $pagingbar .= "&nbsp;(<a class=\"next\" href=\"{$link}{$nstart}{$sistring}\">"
+                                . get_string('next') . '</a>)';
             }
 
             $pagingbar .= '</div>';

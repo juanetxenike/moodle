@@ -102,11 +102,13 @@ $start   = optional_param('start', 0, PARAM_INT);
 $sifirst = optional_param('sifirst', 'all', PARAM_NOTAGS);
 $silast  = optional_param('silast', 'all', PARAM_NOTAGS);
 $preferences = ['ifirst' => $sifirst, 'ilast' => $silast];
-array_map( fn($key, $value) => $value !== 'all'
-            ? set_user_preference($key, $value)
-            : null,
-            array_keys($preferences),
-        $preferences);
+array_map(
+    fn($key, $value) => $value !== 'all'
+        ? set_user_preference($key, $value)
+        : null,
+    array_keys($preferences),
+    $preferences
+);
 
 $sifirst = $USER->preference['ifirst'] ?? 'all';
 $silast  = $USER->preference['ilast'] ?? 'all';
@@ -120,7 +122,7 @@ $fields = [
 ];
 
 // Iterate through the fields array and assign values.
-array_walk($fields, function($column, $param) use (&$where, &$whereparams, $sifirst, $silast, $DB) {
+array_walk($fields, function ($column, $param) use (&$where, &$whereparams, $sifirst, $silast, $DB) {
     $paramvalue = ($param === 'sifirst') ? $sifirst : $silast;
     if ($paramvalue !== 'all') {
         $where[] = $DB->sql_like($column, ":$param", false, false);
@@ -137,15 +139,17 @@ $totalheader = ($total == $grandtotal) ? $total : "{$total}/{$grandtotal}";
 // Get user data.
 // Obtains progress information across a course for all users on that course.
 // Or for all users in a specific group. Intended for use when displaying progress.
-$progress = ($total) ? $completion->get_progress_all(
-                            implode(' AND ', $where), // AND LIKE u.firstname = :sifirst AND LIKE u.lastname = :silast.
-                            $whereparams, // Placeholders: firstname% and lastname%.
-                            $group, // Active group in course.
-                            'u.lastname ASC',
-                            0,
-                            0,
-                            $context)
-            : [];
+$progress = $total
+    ? $completion->get_progress_all(
+        implode(' AND ', $where), // AND LIKE u.firstname = :sifirst AND LIKE u.lastname = :silast.
+        $whereparams, // Placeholders: firstname% and lastname%.
+        $group, // Active group in course.
+        'u.lastname ASC',
+        0,
+        0,
+        $context
+    )
+    : [];
 
 // CREATE DATA TO EXPORT TO TEMPLATE.
 $extrafields = (array) \core_user\fields::get_identity_fields($context, true);
@@ -155,7 +159,7 @@ $engine = new engine($courseid, $format);
 
 // Print criteria titles.
 if (COMPLETION_REPORT_COL_TITLES) {
-    $criteriatitles = array_map(function($criterion) {
+    $criteriatitles = array_map(function ($criterion) {
         return $criterion->get_title_detailed();
     }, $criteria);
 }
@@ -171,9 +175,9 @@ if ($csv) {
     $shortname = format_string($course->shortname, true, ['context' => $context]);
     $shortname = preg_replace('/[^a-z0-9-]/', '_', core_text::strtolower(strip_tags($shortname)));
     $export = new csv_export_writer('comma', '"', 'application/download', $excel);
-    $export->set_filename('completion-'.$shortname);
+    $export->set_filename('completion-' . $shortname);
 
-    $criteriaheaders = array_merge($criteriaheaders, array_reduce($criteria, function($carry, $criterion) use ($modinfo) {
+    $criteriaheaders = array_merge($criteriaheaders, array_reduce($criteria, function ($carry, $criterion) use ($modinfo) {
         if ($criterion->criteriatype == COMPLETION_CRITERIA_TYPE_ACTIVITY) {
             $mod = $criterion->get_mod_instance();
             $activity = $modinfo->cms[$criterion->moduleinstance];
@@ -190,8 +194,16 @@ if ($csv) {
     $criteriaheaders[] = get_string('coursecomplete', 'completion');
     $export->add_data($criteriaheaders);
 
-    $progress = array_map(function($user) use ($extrafields, $criteria,
-                            $completion, $modinfo, $dateformat, $context, $course, $export) {
+    $progress = array_map(function ($user) use (
+        $extrafields,
+        $criteria,
+        $completion,
+        $modinfo,
+        $dateformat,
+        $context,
+        $course,
+        $export
+    ) {
         $usersarray = [
             $user->id,
             fullname($user, has_capability('moodle/site:viewfullnames', $context)),
@@ -199,7 +211,7 @@ if ($csv) {
 
         $usersarray = array_merge($usersarray, array_map(fn($field) => $user->{$field}, $extrafields));
 
-        array_map(function($criterion) use ($user, $completion, $modinfo, $dateformat, $course, &$usersarray) {
+        array_map(function ($criterion) use ($user, $completion, $modinfo, $dateformat, $course, &$usersarray) {
             $criteriacompletion = $completion->get_user_completion($user->id, $criterion);
             if ($criterion->criteriatype == COMPLETION_CRITERIA_TYPE_ACTIVITY) {
                 $activity = $modinfo->cms[$criterion->moduleinstance];
@@ -217,7 +229,7 @@ if ($csv) {
                     COMPLETION_COMPLETE_FAIL => 'fail',
                     default => '',
                 };
-                $usersarray[] = get_string('completion-'.$completiontype, 'completion');
+                $usersarray[] = get_string('completion-' . $completiontype, 'completion');
                 $usersarray[] = $iscomplete ? userdate($criteriacompletion->timecompleted, $dateformat) : '';
             }
         }, $criteria);
