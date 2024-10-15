@@ -22,9 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\exception\moodle_exception;
 use core\report_helper;
 use report_completion\course_report_pdf;
 use report_progress\local\helper;
+use report_progress\output\report;
+use core\url as moodle_url;
+use core\context\course;
+use core\user;
 
 require('../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
@@ -41,11 +46,11 @@ define('COMPLETION_REPORT_COL_TITLES',  true);
 $courseid = required_param('course', PARAM_INT);
 $format = optional_param('format', '', PARAM_ALPHA);
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
-$context = context_course::instance($course->id);
+$context = course::instance($course->id);
 $url = new moodle_url('/report/progress/index.php', ['course' => $course->id]);
 
 if (!$course) {
-    throw new \moodle_exception(errorcode: 'invalidcourseid');
+    throw new moodle_exception(errorcode: 'invalidcourseid');
 }
 
 $excel = ($format == 'excelcsv');
@@ -136,40 +141,6 @@ if ($total) {
     );
 }
 
-// CREATE DATA TO EXPORT TO TEMPLATE.
-$fieldsarray = array_map(function($field) {
-    return \core_user\fields::get_display_name($field);
-}, $extrafields);
-
-$completionengine = new \report_completion\engine;
-$progressengine = new \report_progress\engine();
-
-// ACTIVITIES HEADINGS.
-$formattedactivities = $progressengine->formatted_activities($activities);
-
-// SECTIONS HEADINGS.
-$sectionheaders = $progressengine->section_headers($activities);
-// END SECTION HEADINGS.
-
-// ACTIVITY ICONS.
-$activityicons = $progressengine->activity_icons($activities, $format);
-// END ACTIVITY ICONS.
-
-// ACTIVITIES COMPLETION PROGRESS.
-// We will loop through the users progress results and display them in rows and columns accordingl to the criteria.
-// We will return the following array.
-// [ 'fullname' => '',
-// 'extrafields' => [
-// 'email' => '',
-// 'fullname' => ''
-// 'lastname' => ''],
-// 'activityprogress' => [
-// ['date' => '',
-// 'describe' => '']
-// ],
-// ].
-$usersarray = $progressengine->users_progress($progress, $context, $extrafields, $activities, $format);
-
 if ( $csv ) {
 
     $shortname = format_string($course->shortname, true, array('context' => $context));
@@ -178,26 +149,26 @@ if ( $csv ) {
     $export = new csv_export_writer('comma', '"', 'application/download', $excel);
     $export->set_filename('progress-'.$shortname);
 
-    $row = [];
-    $row[] = get_string('completion', 'completion');
+    $headerrow = [];
+    $headerrow[] = get_string('completion', 'completion');
     foreach ($extrafields as $field) {
-        $row[] = \core_user\fields::get_display_name($field);
+        $headerrow[] = \core_user\fields::get_display_name($field);
     }
 
     foreach ($activities as $activity) {
         $datetext = $activity->completionexpected ? userdate($activity->completionexpected, "%F %T") : '';
         $displayname = format_string($activity->name, true, ['context' => $activity->context]);
-        $row[] = $displayname;
-        $row[] = $datetext;
+        $headerrow[] = $displayname;
+        $headerrow[] = $datetext;
     }
 
     $export->add_data($row);
 
     foreach ($progress as $user) {
-        $row = [];
-        $row[] = fullname($user, has_capability('moodle/site:viewfullnames', $context));
+        $usersrow = [];
+        $usersrow[] = fullname($user, has_capability('moodle/site:viewfullnames', $context));
         foreach ($extrafields as $field) {
-            $row[] = $user->{$field};
+            $usersrow[] = $user->{$field};
         }
         foreach ($activities as $activity) {
             $state = COMPLETION_INCOMPLETE;
@@ -226,34 +197,31 @@ if ( $csv ) {
             }
             $describe = get_string('completion-' . $completiontype, 'completion');
             if ($overrideby) {
-                $overridebyuser = \core_user::get_user($overrideby, '*', MUST_EXIST);
+                $overridebyuser = user::get_user($overrideby, '*', MUST_EXIST);
                 $describe = get_string('completion-' . $completiontype, 'completion', fullname($overridebyuser));
             }
             $date = ($date != '') ? userdate($thisprogress->timemodified, "%F %T") : '';
-            $row[] = $describe . ' ' . $date;
+            $usersrow[] = $describe . ' ' . $date;
         }
-        $export->add_data($row);
+        $export->add_data($usersrow);
     }
     $export->download_file();
     exit;
 }
 
 // CREATE HTML.
-$html = $OUTPUT->render_from_template(
-    'report_progress/table',
-    (object) [
-        'title' => get_string('pluginname', 'report_progress'),
-        'totalparticipants' => get_string('allparticipants').": {$totalheader}",
-        'fields' => $fieldsarray,
-        'formattedactivities' => array_values($formattedactivities),
-        'users' => array_values($usersarray),
-        'sectionheaders' => (array) $sectionheaders,
-        'activityicons' => $activityicons,
-        'ishtml' => ($format != 'csv' && $format != 'pdf' && $format != 'excelcsv') ? true : false,
-        'csvurl' => (new moodle_url('/report/progress/index.php', ['course' => $course->id, 'format' => 'csv']))->out(),
-        'excelurl' => new moodle_url('/report/progress/index.php', ['course' => $course->id, 'format' => 'excelcsv']),
-        'pdfurl' => new moodle_url('/report/progress/index.php', ['course' => $course->id, 'format' => 'pdf']),
-    ]);
+$renderable = new report(
+    $courseid,
+    $format,
+    $activityinclude,
+    $activityorder,
+    $activitysection,
+    $totalheader,
+    $progress
+);
+$renderer = $PAGE->get_renderer('report_progress');
+$html = $renderer->render_activity_completion_report($renderable);
+
 if ( $format == 'pdf' ) {
     require_once("{$CFG->libdir}/pdflib.php");
     // SEND TO PDF OUTPUT.

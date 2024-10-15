@@ -65,7 +65,7 @@ class engine {
      */
     private $criteria;
     /**
-     * @var bool $hasagg Indicates whether the aggregation has been performed.
+     * @var array $hasagg Indicates whether the aggregation has been performed.
      */
     private $hasagg;
 

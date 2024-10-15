@@ -16,9 +16,11 @@
 
 namespace report_progress\output;
 
-use single_select;
-use plugin_renderer_base;
-use html_writer;
+use core\output\plugin_renderer_base;
+use core\output\single_select;
+use core\output\html_writer;
+use core\url as moodle_url;
+
 
 /**
  * Renderer for report progress.
@@ -37,7 +39,7 @@ class renderer extends plugin_renderer_base {
      * @return string HTML
      * @throws \coding_exception
      */
-    public function render_include_activity_select(\moodle_url $url, array $activitytypes,
+    public function render_include_activity_select(moodle_url $url, array $activitytypes,
             string $activityinclude): string {
         $includeurl = fullclone($url);
         $includeurl->remove_params(['page', 'activityinclude']);
@@ -46,7 +48,7 @@ class renderer extends plugin_renderer_base {
             $activitytypes, $activityinclude, null, 'include-activity-select-report'
         );
         $activityincludeselect->set_label(get_string('include', 'report_progress'));
-        return \html_writer::div($this->output->render($activityincludeselect),
+        return html_writer::div($this->output->render($activityincludeselect),
                 'include-activity-selector d-inline-block me-3' );
     }
 
@@ -58,7 +60,7 @@ class renderer extends plugin_renderer_base {
      * @return string HTML
      * @throws \coding_exception
      */
-    public function render_activity_order_select(\moodle_url $url, string $activityorder): string {
+    public function render_activity_order_select(moodle_url $url, string $activityorder): string {
         $activityorderurl = fullclone($url);
         $activityorderurl->remove_params(['activityorder']);
         $options = ['orderincourse' => get_string('orderincourse', 'report_progress'),
@@ -68,7 +70,7 @@ class renderer extends plugin_renderer_base {
             $options, $activityorder, null, 'activity-order-select-report'
         );
         $sorttable->set_label(get_string('activityorder', 'report_progress'));
-        return \html_writer::div($this->output->render($sorttable),
+        return html_writer::div($this->output->render($sorttable),
                 'activity-order-selector include-activity-selector d-inline-block');
     }
 
@@ -79,7 +81,7 @@ class renderer extends plugin_renderer_base {
      * @param \stdClass $course Current course.
      * @return string HTML
      */
-    public function render_groups_select(\moodle_url $url, \stdClass $course): string {
+    public function render_groups_select(moodle_url $url, \stdClass $course): string {
         $groupurl = fullclone($url);
         $groupurl->remove_params(['page', 'group']);
         $groupoutput = groups_print_course_menu($course, $groupurl, true);
@@ -88,7 +90,7 @@ class renderer extends plugin_renderer_base {
             return $groupoutput;
         }
 
-        return \html_writer::div($groupoutput, 'd-inline-block me-3');
+        return html_writer::div($groupoutput, 'd-inline-block me-3');
     }
 
     /**
@@ -100,7 +102,7 @@ class renderer extends plugin_renderer_base {
      * @return string HTML
      * @throws \coding_exception
      */
-    public function render_activity_section_select(\moodle_url $url, string $activitysection, array $sections): string {
+    public function render_activity_section_select(moodle_url $url, string $activitysection, array $sections): string {
         $activitysectionurl = fullclone($url);
         $activitysectionurl->remove_params(['activitysection']);
         $options = $sections;
@@ -110,7 +112,7 @@ class renderer extends plugin_renderer_base {
             $options, $activitysection, null, 'activity-section-select-report'
         );
         $sorttable->set_label(get_string('activitysection', 'report_progress'));
-        return \html_writer::div($this->output->render($sorttable),
+        return html_writer::div($this->output->render($sorttable),
                 'activity-section-selector include-activity-selector d-inline-block ms-3');
     }
 
@@ -121,7 +123,7 @@ class renderer extends plugin_renderer_base {
      * @return string HTML
      * @throws \coding_exception
      */
-    public function render_download_buttons(\moodle_url $url): string {
+    public function render_download_buttons(moodle_url $url): string {
         $downloadurl = fullclone($url);
         $downloadurl->remove_params(['page']);
         $downloadurl->param('format', 'csv');
@@ -132,5 +134,17 @@ class renderer extends plugin_renderer_base {
         $downloadhtml .= html_writer::end_tag('ul');
 
         return $downloadhtml;
+    }
+
+    /**
+     * Display the completion report
+     *
+     * @param report $report The report object to be displayed.
+     * @return string
+     */
+    public function render_activity_completion_report(report $report) {
+        return $this->render_from_template(
+                    'report_progress/table',
+                    $report->export_for_template($this));
     }
 }

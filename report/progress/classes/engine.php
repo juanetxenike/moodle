@@ -16,6 +16,8 @@
 
 namespace report_progress;
 use report_progress\local\helper;
+use core\url as moodle_url;
+use core_user\fields;
 
 /**
  * Class engine
@@ -26,6 +28,17 @@ use report_progress\local\helper;
  */
 class engine {
 
+
+    /**
+     * Retrieves extra fields based on the provided context.
+     *
+     * @param mixed $context The context for which extra fields are to be retrieved.
+     * @return array An array of extra fields.
+     */
+    public function extrafields($context): array {
+        $userfields = fields::for_identity($context);
+        return $userfields->get_required_fields([fields::PURPOSE_IDENTITY]);
+    }
     /**
      * Formats the given activities.
      *
@@ -103,7 +116,7 @@ class engine {
             $iconlink = '';
             $iconalt = ''; // Required.
             $iconattributes = ['class' => 'icon'];
-            $iconlink = new \moodle_url('/mod/'.$activity->modname.'/view.php', ['id' => $activity->id]);
+            $iconlink = new moodle_url('/mod/'.$activity->modname.'/view.php', ['id' => $activity->id]);
             $icontitle = format_string($activity->name, true, ['context' => $activity->context]);
             $activityicons[] = [
                 'icon' => ($format != 'csv' && $format != 'pdf' && $format != 'excelcsv')
@@ -229,9 +242,9 @@ class engine {
      * @param string $url The URL for the paging bar links.
      * @param int $page The current page number.
      *
-     * @return void
+     * @return string
      */
-    public function pagingbar($course, $sort, $sifirst, $silast, $total, $url, $page) {
+    public function pagingbar($course, $sort, $sifirst, $silast, $total, $url, $page): string {
         global $OUTPUT, $CFG;
         // Build link for paging.
         $link = $CFG->wwwroot.'/report/completion/index.php?course='.$course->id;
