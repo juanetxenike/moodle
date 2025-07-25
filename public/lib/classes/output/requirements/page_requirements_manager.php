@@ -337,7 +337,7 @@ class page_requirements_manager {
                 'templaterev'           => $this->get_templaterev(),
                 'siteId'                => (int) SITEID,
                 'userId'                => (int) $USER->id,
-                'deprecationignorelist'       => !empty($CFG->jsdeprecationignorelist) ? $CFG->jsdeprecationignorelist : [],
+                'traceId'               => \core\telemetry::get_trace_parent_id(),
             ];
             if ($CFG->debugdeveloper) {
                 $this->M_cfg['developerdebug'] = true;
