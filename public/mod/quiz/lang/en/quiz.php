@@ -135,7 +135,7 @@ $string['browsersecurity_help'] = 'If "Full screen pop-up with some JavaScript s
 * The quiz will only start if the student has a JavaScript-enabled web-browser
 * The quiz appears in a full screen popup window that covers all the other windows and has no navigation controls
 * Students are prevented, as far as is possible, from using facilities like copy and paste';
-$string['cachedef_overrides'] = 'User and group override information';
+$string['cachedef_quiz_overrides'] = 'User and group override information';
 $string['calculated'] = 'Calculated';
 $string['calculatedquestion'] = 'Calculated question not supported at line {$a}. The question will be ignored';
 $string['cannotcreatepath'] = 'Path cannot be created ({$a})';
@@ -1169,3 +1169,4 @@ $string['randomsystemwithsubcat'] = 'Any system-level category';
 // Deprecated since Moodle 5.2.
 $string['gobacktoquiz'] = 'Go back';
 $string['selectquestionbank'] = 'Select question bank';
+$string['cachedef_overrides'] = 'User and group override information';
