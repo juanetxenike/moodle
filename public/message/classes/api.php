@@ -329,6 +329,7 @@ class api {
                 // Otherwise it means that the $USER was not allowed to search the returned user.
                 if (!empty($userdetails) and !empty($userdetails['fullname'])) {
                     // We know we've matched, but only save the record if it's within the offset area we need.
+                    $user->initials = \core_user::get_initials($user);
                     if ($limitfrom == 0) {
                         // No offset specified, so just save.
                         $returnedusers[$id] = $user;

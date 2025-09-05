@@ -166,6 +166,7 @@ class helper {
         $data->userid = $userfields->id;
         $data->useridfrom = null;
         $data->fullname = fullname($userfields);
+        $data->initials = \core_user::get_initials($userfields);
         // Get the user picture data.
         $userpicture = new \user_picture($userfields);
         $userpicture->size = 1; // Size f1.
@@ -437,6 +438,7 @@ class helper {
             $data = new stdClass();
             $data->id = $member->id;
             $data->fullname = fullname($member);
+            $data->initials = \core_user::get_initials($member);
 
             // Create the URL for their profile.
             $profileurl = new \moodle_url('/user/profile.php', ['id' => $member->id]);

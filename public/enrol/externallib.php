@@ -103,6 +103,7 @@ class core_enrol_external extends external_api {
         $groupid        = 0;
         $onlyactive     = false;
         $userfields     = array();
+        $includeinitials = false;
         $limitfrom = 0;
         $limitnumber = 0;
         foreach ($params['options'] as $option) {
@@ -115,8 +116,12 @@ class core_enrol_external extends external_api {
                     break;
                 case 'userfields':
                     $thefields = explode(',', $option['value']);
-                    foreach ($thefields as $f) {
-                        $userfields[] = clean_param($f, PARAM_ALPHANUMEXT);
+                    foreach ($thefields as $field) {
+                        $clean = clean_param($field, PARAM_ALPHANUMEXT);
+                        if ($clean === '') {
+                            continue;
+                        }
+                        $userfields[] = $clean;
                     }
                     break;
                 case 'limitfrom' :
@@ -163,6 +168,17 @@ class core_enrol_external extends external_api {
 
             // To see the permissions of others role:review capability is required.
             require_capability('moodle/role:review', $coursecontext);
+            // Decide when to include initials.
+            if (empty($userfields)) {
+                $includeinitials = true;
+            } else {
+                $key = array_search('initials', $userfields, true);
+                if ($key !== false) {
+                    unset($userfields[$key]);
+                    $includeinitials = true;
+                }
+            }
+
             foreach ($coursecapability['capabilities'] as $capability) {
                 $courseusers['courseid'] = $courseid;
                 $courseusers['capability'] = $capability;
@@ -180,6 +196,9 @@ class core_enrol_external extends external_api {
                 $users = array();
                 foreach ($enrolledusers as $courseuser) {
                     if ($userdetails = user_get_user_details($courseuser, $course, $userfields)) {
+                        if ($includeinitials) {
+                            $userdetails['initials'] = core_user::get_initials($courseuser);
+                        }
                         $users[] = $userdetails;
                     }
                 }
@@ -209,6 +228,7 @@ class core_enrol_external extends external_api {
                     'username'    => new external_value(PARAM_RAW, 'Username', VALUE_OPTIONAL),
                     'firstname'   => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
                     'lastname'    => new external_value(PARAM_NOTAGS, 'The family name of the user', VALUE_OPTIONAL),
+                            'initials'    => new external_value(PARAM_NOTAGS, 'The initials of the user', VALUE_OPTIONAL),
                     'fullname'    => new external_value(PARAM_NOTAGS, 'The fullname of the user'),
                     'email'       => new external_value(PARAM_TEXT, 'Email address', VALUE_OPTIONAL),
                     'address'     => new external_value(PARAM_TEXT, 'Postal address', VALUE_OPTIONAL),
@@ -599,6 +619,7 @@ class core_enrol_external extends external_api {
                     }
                     $userdetails['customfields'] = array_values($userdetails['customfields']);
                 }
+                $userdetails['initials'] = core_user::get_initials($user);
                 $results[] = $userdetails;
             }
         }
@@ -699,6 +720,7 @@ class core_enrol_external extends external_api {
         );
         foreach ($users['users'] as $user) {
             if ($userdetails = user_get_user_details($user, $course, $requiredfields)) {
+                $userdetails['initials'] = core_user::get_initials($user);
                 $results[] = $userdetails;
             }
         }
@@ -782,6 +804,7 @@ class core_enrol_external extends external_api {
         $onlyactive     = false;
         $onlysuspended  = false;
         $userfields     = [];
+        $includeinitials = false;
         $limitfrom = 0;
         $limitnumber = 0;
         $sortby = 'us.id';
@@ -803,8 +826,12 @@ class core_enrol_external extends external_api {
                     break;
                 case 'userfields':
                     $thefields = explode(',', $option['value']);
-                    foreach ($thefields as $f) {
-                        $userfields[] = clean_param($f, PARAM_ALPHANUMEXT);
+                    foreach ($thefields as $field) {
+                        $clean = clean_param($field, PARAM_ALPHANUMEXT);
+                        if ($clean === '') {
+                            continue;
+                        }
+                        $userfields[] = $clean;
                     }
                     break;
                 case 'limitfrom' :
@@ -853,6 +880,16 @@ class core_enrol_external extends external_api {
         }
 
         course_require_view_participants($context);
+        // Decide when to include initials.
+        if (empty($userfields)) {
+            $includeinitials = true;
+        } else {
+            $key = array_search('initials', $userfields, true);
+            if ($key !== false) {
+                unset($userfields[$key]);
+                $includeinitials = true;
+            }
+        }
 
         // to overwrite this parameter, you need role:review capability
         if ($withcapability) {
@@ -912,7 +949,8 @@ class core_enrol_external extends external_api {
                 $userpicture = new user_picture($user);
                 $userpicture->size = 1;
                 $userdetails['profileimageurl'] = $userpicture->get_url($PAGE)->out(false);
-            }
+            } 
+            $userdetails['initials'] = core_user::get_initials($user);
             $users[] = $userdetails;
         }
         $enrolledusers->close();
@@ -933,6 +971,7 @@ class core_enrol_external extends external_api {
                     'username'    => new external_value(PARAM_RAW, 'Username policy is defined in Moodle security config', VALUE_OPTIONAL),
                     'firstname'   => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
                     'lastname'    => new external_value(PARAM_NOTAGS, 'The family name of the user', VALUE_OPTIONAL),
+                    'initials'    => new external_value(PARAM_NOTAGS, 'The initials of the user', VALUE_OPTIONAL),
                     'fullname'    => new external_value(PARAM_NOTAGS, 'The fullname of the user'),
                     'email'       => new external_value(PARAM_TEXT, 'An email address - allow email as root@localhost', VALUE_OPTIONAL),
                     'address'     => new external_value(PARAM_TEXT, 'Postal address', VALUE_OPTIONAL),

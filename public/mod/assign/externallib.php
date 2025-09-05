@@ -2755,8 +2755,14 @@ class mod_assign_external extends \mod_assign\external\external_api {
                 // Now we do the expensive lookup of user details because we completed the filtering.
                 if (!$assign->is_blind_marking() && !$params['onlyids']) {
                     $userdetails = user_get_user_details($record, $course, $userfields);
+                    if ($userdetails === null) {
+                        // If user details are not available (e.g. access prevented), fall back to minimal data.
+                        $userdetails = ['id' => $record->id];
+                    } else {
+                        $userdetails['initials'] = core_user::get_initials($record);
+                    }
                 } else {
-                    $userdetails = array('id' => $record->id);
+                    $userdetails = ['id' => $record->id];
                 }
                 $userdetails['fullname'] = $fullname;
                 $userdetails['submitted'] = $record->submitted;
@@ -2795,7 +2801,7 @@ class mod_assign_external extends \mod_assign\external\external_api {
         $userdesc = core_user_external::user_description();
         // List unneeded properties.
         $unneededproperties = [
-            'auth', 'confirmed', 'lang', 'calendartype', 'theme', 'timezone', 'mailformat'
+            'auth', 'confirmed', 'lang', 'calendartype', 'theme', 'timezone', 'mailformat',
         ];
         // Remove unneeded properties for consistency with the previous version.
         foreach ($unneededproperties as $prop) {
@@ -2939,6 +2945,7 @@ class mod_assign_external extends \mod_assign\external\external_api {
         // hasn't asked for user details to be embedded.
         if (!$assign->is_blind_marking() && $embeduser) {
             if ($userdetails = user_get_user_details($participant, $course)) {
+                $userdetails['initials'] = core_user::get_initials($participant);
                 $return['user'] = $userdetails;
             }
         }

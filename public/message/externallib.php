@@ -997,6 +997,7 @@ class core_message_external extends external_api {
             array(
                 'userid' => new external_value(PARAM_INT, 'The user\'s id'),
                 'fullname' => new external_value(PARAM_NOTAGS, 'The user\'s name'),
+                'initials'    => new external_value(PARAM_NOTAGS, 'The initials of the user', VALUE_OPTIONAL),
                 'profileimageurl' => new external_value(PARAM_URL, 'User picture URL'),
                 'profileimageurlsmall' => new external_value(PARAM_URL, 'Small user picture URL'),
                 'ismessaging' => new external_value(PARAM_BOOL, 'If we are messaging the user'),
@@ -1059,6 +1060,7 @@ class core_message_external extends external_api {
         $result = [
             'id' => new external_value(PARAM_INT, 'The user id'),
             'fullname' => new external_value(PARAM_NOTAGS, 'The user\'s name'),
+            'initials'    => new external_value(PARAM_NOTAGS, 'The initials of the user', VALUE_OPTIONAL),
             'profileurl' => new external_value(PARAM_URL, 'The link to the user\'s profile page'),
             'profileimageurl' => new external_value(PARAM_URL, 'User picture URL'),
             'profileimageurlsmall' => new external_value(PARAM_URL, 'Small user picture URL'),
@@ -1256,6 +1258,7 @@ class core_message_external extends external_api {
             $contact = new \stdClass();
             $contact->userid = $message->userid;
             $contact->fullname = $message->fullname;
+            $contact->initials = $message->initials;
             $contact->profileimageurl = $message->profileimageurl;
             $contact->profileimageurlsmall = $message->profileimageurlsmall;
             $contact->messageid = $message->messageid;
