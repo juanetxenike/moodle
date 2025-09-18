@@ -139,6 +139,9 @@ if ($mform->is_cancelled()){
 } else if ($data = $mform->get_data()) {
     // Data submitted and validated, update and return to course.
 
+    // The component field should not be changed.
+    unset($data->component);
+
     // For consistency, we set the availability field to 'null' if it is empty.
     if (!empty($CFG->enableavailability)) {
         // Renamed field.

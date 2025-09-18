@@ -1305,6 +1305,11 @@ abstract class base {
         $elements = array();
         if ($forsection) {
             $options = $this->section_format_options(true);
+            // Add the component field, so course formats can hide other fields as appropriate.
+            $options = array_merge(
+                ['component' => ['default' => '', 'type' => PARAM_TEXT, 'label' => '', 'element_type' => 'hidden']],
+                $options,
+            );
         } else {
             $options = $this->course_format_options(true);
         }
