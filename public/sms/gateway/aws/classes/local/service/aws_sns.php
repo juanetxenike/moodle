@@ -59,18 +59,19 @@ class aws_sns implements aws_sms_service_provider {
         $senderid = substr($senderid, 0, 11);
 
         try {
-            // These messages need to be transactional.
-            $client->SetSMSAttributes([
-                'attributes' => [
-                    'DefaultSMSType' => 'Transactional',
-                    'DefaultSenderID' => $senderid,
-                ],
-            ]);
-
-            // Actually send the message.
             $client->publish([
                 'Message' => $messagecontent,
                 'PhoneNumber' => $phonenumber,
+                'MessageAttributes' => [
+                    'AWS.SNS.SMS.SenderID' => [
+                        'DataType' => 'String',
+                        'StringValue' => $senderid,
+                    ],
+                    'AWS.SNS.SMS.SMSType' => [
+                        'DataType' => 'String',
+                        'StringValue' => 'Transactional',
+                    ],
+                ],
             ]);
             return \core_sms\message_status::GATEWAY_SENT;
         } catch (\Aws\Exception\AwsException $e) {
