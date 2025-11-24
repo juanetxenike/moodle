@@ -280,7 +280,13 @@ class MoodleQuickForm_filemanager extends HTML_QuickForm_element implements temp
         $html .= html_writer::empty_tag('input', array('value' => $draftitemid, 'name' => $elname, 'type' => 'hidden', 'id' => $id));
 
         if (!empty($options->accepted_types) && $options->accepted_types != '*') {
-            $html .= html_writer::tag('div', get_string('filesofthesetypes', 'form'), ['class' => 'mt-1']);
+            $html .= html_writer::tag(
+                'div',
+                get_string('filesofthesetypes', 'form'),
+                [
+                    'class' => 'filetypes-descriptions-intro mt-1',
+                ],
+            );
             $util = new \core_form\filetypes_util();
             $filetypes = $options->accepted_types;
             $filetypedescriptions = $util->describe_file_types($filetypes);
