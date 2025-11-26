@@ -94,7 +94,14 @@ class override_manager {
             return isset($formdata->$key) && !is_null($formdata->$key);
         }, self::OVERRIDEABLE_QUIZ_SETTINGS);
 
-        if (!in_array(true, $keysthatareset)) {
+        $hasoverridevalues = in_array(true, $keysthatareset, true);
+
+        // If updating, we can also just update the reason.
+        if (!empty($formdata->id) && (property_exists($formdata, 'reason') || property_exists($formdata, 'reasonformat'))) {
+            $hasoverridevalues = true;
+        }
+
+        if (!$hasoverridevalues) {
             $errors['general'][] = new \lang_string('nooverridedata', 'quiz');
         }
 
@@ -223,6 +230,14 @@ class override_manager {
 
         // Remove values that are the same as currently in the quiz.
         $settings = $this->clear_unused_values($settings);
+
+        // Pass through the optional reason fields unchanged.
+        if (array_key_exists('reason', $formdata)) {
+            $settings['reason'] = $formdata['reason'];
+        }
+        if (array_key_exists('reasonformat', $formdata) && $formdata['reasonformat'] !== null) {
+            $settings['reasonformat'] = $formdata['reasonformat'];
+        }
 
         // Add the user / group back as applicable.
         $userorgroupdata = array_intersect_key($formdata, array_flip(['userid', 'groupid', 'quiz', 'id']));
