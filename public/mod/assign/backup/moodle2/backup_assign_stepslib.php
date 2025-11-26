@@ -176,8 +176,17 @@ class backup_assign_activity_structure_step extends backup_activity_structure_st
                                                          'value'));
 
         $overrides = new backup_nested_element('overrides');
-        $override = new backup_nested_element('override', array('id'), array(
-            'groupid', 'userid', 'sortorder', 'allowsubmissionsfromdate', 'duedate', 'cutoffdate', 'timelimit'));
+        $override = new backup_nested_element('override', ['id'], [
+            'groupid',
+            'userid',
+            'sortorder',
+            'allowsubmissionsfromdate',
+            'duedate',
+            'cutoffdate',
+            'timelimit',
+            'reason',
+            'reasonformat',
+        ]);
 
         // Build the tree.
         $assign->add_child($userflags);

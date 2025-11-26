@@ -83,7 +83,8 @@ class provider implements
                 'userid' => 'privacy:metadata:userid',
                 'allowsubmissionsfromdate' => 'allowsubmissionsfromdate',
                 'duedate' => 'duedate',
-                'cutoffdate' => 'cutoffdate'
+                'cutoffdate' => 'cutoffdate',
+                'reason' => 'privacy:metadata:assignoverrides:reason',
         ];
         $assignsubmission = [
                 'userid' => 'privacy:metadata:userid',
@@ -700,6 +701,10 @@ class provider implements
             }
             if (!empty($overrides->allowsubmissionsfromdate)) {
                 $data->allowsubmissionsfromdate = transform::datetime($overrides->allowsubmissionsfromdate);
+            }
+            if (!empty($overrides->reason)) {
+                $format = $overrides->reasonformat ?? FORMAT_MOODLE;
+                $data->reason = format_text($overrides->reason, $format, ['context' => $context]);
             }
             if (!empty($data)) {
                 writer::with_context($context)->export_data([get_string('overrides', 'mod_assign')], $data);

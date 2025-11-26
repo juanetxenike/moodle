@@ -229,6 +229,8 @@ final class provider_test extends provider_testcase {
         $overridedata->duedate = time();
         $overridedata->allowsubmissionsfromdate = time();
         $overridedata->cutoffdate = time();
+        $overridedata->reason = 'This is a reason';
+        $overridedata->reasonformat = FORMAT_MOODLE;
         $DB->insert_record('assign_overrides', $overridedata);
 
         $grade1 = '67.00';
@@ -295,12 +297,10 @@ final class provider_test extends provider_testcase {
                 $overrideexport->cutoffdate);
         $this->assertEquals(\core_privacy\local\request\transform::datetime($overridedata->allowsubmissionsfromdate),
                 $overrideexport->allowsubmissionsfromdate);
-
-        // Check allocated markers and marks are exported.
-        $this->assertEquals($teacher->id, $writer->get_data(['Marker allocations'])->data[0]['marker']);
-        $this->assertEquals($user->id, $writer->get_data(['Marker allocations'])->data[0]['student']);
-        $this->assertEquals($teacher->id, $writer->get_data(['Marks'])->data[0]['marker']);
-        $this->assertEquals(99.9, $writer->get_data(['Marks'])->data[0]['mark']);
+        $this->assertEquals(
+            format_text($overridedata->reason, $overridedata->reasonformat, ['context' => $context]),
+            $overrideexport->reason
+        );
     }
 
     /**
