@@ -102,8 +102,6 @@ $string['config_disablepublicchat_default'] = 'Disable public chat enabled by de
 $string['config_disablepublicchat_default_description'] = 'If enabled the public chat will be disabled.';
 $string['config_disablepublicchat_editable'] = 'Disable public chat can be edited';
 $string['config_disablepublicchat_editable_description'] = 'Disable public chat by default can be edited when the instance is added or updated.';
-$string['config_experimental_features'] = 'Experimental features';
-$string['config_experimental_features_description'] = 'Configuration for experimental features.';
 $string['config_extended_capabilities'] = 'Extended capabilities';
 $string['config_extended_capabilities_description'] = 'Configuration for extended capabilities when the BigBlueButton server offers them.';
 $string['config_general'] = 'General settings';
@@ -192,6 +190,8 @@ $string['config_scheduled_pre_opening'] = 'Accessible before opening time';
 $string['config_scheduled_pre_opening_description'] = 'The time in minutes that the room is open for prior to the scheduled opening time.';
 $string['config_server_url'] = 'BigBlueButton server URL';
 $string['config_server_url_description'] = 'The URL of your BigBlueButton server.';
+$string['config_session_access'] = 'Session Access';
+$string['config_session_access_description'] = 'Configuration for user access to sessions.';
 $string['config_shared_secret'] = 'BigBlueButton shared secret';
 $string['config_shared_secret_description'] = 'The security secret of your BigBlueButton server.';
 $string['config_showpresentation_default'] = 'Show presentation file on activity page';
@@ -616,3 +616,6 @@ $string['waitformoderator'] = 'Waiting for a moderator to join.';
 // Deprecated since Moodle 4.5.
 $string['view_mobile_message_groups_not_supported'] = 'This instance is enabled to work with groups but the mobile app doesn\'t yet support it. Please use the web version.';
 $string['view_mobile_message_reload_page_creation_time_meeting'] = 'You exceeded 45 seconds on this page. Please refresh the page to join the session.';
+// Deprecated since Moodle 5.2.
+$string['config_experimental_features'] = 'Experimental features';
+$string['config_experimental_features_description'] = 'Configuration for experimental features.';
