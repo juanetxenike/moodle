@@ -2384,7 +2384,18 @@ class core_renderer extends renderer_base {
             $this->add_action_handler(new popup_action('click', $url), $id);
         }
 
-        return html_writer::tag('a', $output, $attributes);
+        $output = html_writer::tag('a', $output, $attributes);
+
+        // Show suspended label if needed.
+        if ( $userpicture->showsuspended && property_exists($user, 'suspended') && $user->suspended) {
+            $output .= html_writer::tag(
+                'span',
+                get_string('suspended'),
+                ['class' => 'badge text-bg-warning ms-1']
+            );
+        }
+        return $output;
+
     }
 
     /**
