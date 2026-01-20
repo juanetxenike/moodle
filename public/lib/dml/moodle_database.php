@@ -2919,6 +2919,18 @@ abstract class moodle_database {
     }
 
     /**
+     * Mark one or more tables as requiring reads from the primary (writer) connection.
+     *
+     * This is useful in a read replica setup, where code wants to avoid subtle race
+     * conditions by ensuring reads are routed to the writer before an imminent write.
+     *
+     * @param string ...$tables Unprefixed table names (e.g., 'user', 'task_adhoc').
+     */
+    public function mark_tables_for_primary(string ...$tables): void {
+        // No-op by default. Drivers supporting read replicas override this.
+    }
+
+    /**
      * Returns the number of writes done by this database.
      * @return int Number of writes.
      */
