@@ -765,7 +765,7 @@ class core_enrol_external extends external_api {
      * @return array An array of users
      */
     public static function get_enrolled_users($courseid, $options = []) {
-        global $CFG, $USER, $DB;
+        global $CFG, $USER, $DB, $PAGE;
 
         require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->dirroot . "/user/lib.php");
@@ -903,9 +903,17 @@ class core_enrol_external extends external_api {
         $users = [];
         foreach ($enrolledusers as $user) {
             context_helper::preload_from_record($user);
-            if ($userdetails = user_get_user_details($user, $course, $userfields)) {
-                $users[] = $userdetails;
+            $userdetails = user_get_user_details($user, $course, $userfields);
+            if (!$userdetails) {
+                $userdetails = [
+                    'id' => $user->id,
+                    'fullname' => fullname($user),
+                ];
+                $userpicture = new user_picture($user);
+                $userpicture->size = 1;
+                $userdetails['profileimageurl'] = $userpicture->get_url($PAGE)->out(false);
             }
+            $users[] = $userdetails;
         }
         $enrolledusers->close();
 
