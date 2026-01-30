@@ -808,15 +808,26 @@ class api {
     /**
      * Gets Moodle app plan subscription information for the current site as it is returned by the Apps Portal.
      *
+     * @param bool $forcecache If true, return only cached data. Has priority over $ignorecache.
+     * @param bool $ignorecache If true, ignore cached data and request information from the Application Portal.
+     * @param int $timeout Time in seconds to wait for the Apps Portal response before giving up. Defaults to 10 seconds.
      * @return array Subscription information
      */
-    public static function get_subscription_information(): ?array {
+    public static function get_subscription_information($forcecache = false, $ignorecache = false, $timeout = 10): ?array {
         global $CFG;
 
-        // Use session cache to prevent multiple requests.
-        $cache = \cache::make('tool_mobile', 'subscriptiondata');
+        $timeout = min(30, $timeout);
+        // Manage cache of the subscription information to avoid requesting it too often to the Moodle Apps Portal.
+        $cache = \cache::make('tool_mobile', 'subscriptioninfo');
         $subscriptiondata = $cache->get(0);
-        if ($subscriptiondata !== false) {
+
+        // If we must force using cache, return it (or null if not present) and never contact the portal.
+        if ($forcecache) {
+            return $subscriptiondata !== false ? $subscriptiondata : null;
+        }
+
+        // If we are allowed to use cache and we have data, return it early.
+        if (!$ignorecache && $subscriptiondata !== false) {
             return $subscriptiondata;
         }
 
@@ -846,20 +857,25 @@ class api {
             'appids' => [$androidappid, $iosappid],
             'credentials' => $credentials,
         ];
+        // Get the current language to send to the WS.
+        $settingslang = current_language();
         // Prepare the arguments for a request to the AJAX nologin endpoint.
         $args = [
             (object) [
                 'index' => 0,
                 'methodname' => 'local_apps_get_site_info',
                 'args' => $fnparams,
-            ]
+            ],
         ];
 
         // Ask the Moodle Apps Portal for the subscription information.
         $curl = new curl();
-        $curl->setopt(array('CURLOPT_TIMEOUT' => 10, 'CURLOPT_CONNECTTIMEOUT' => 10));
+        $curl->setopt([
+            'CURLOPT_TIMEOUT' => $timeout,
+            'CURLOPT_CONNECTTIMEOUT' => $timeout,
+        ]);
 
-        $serverurl = static::MOODLE_APPS_PORTAL_URL . "/lib/ajax/service-nologin.php";
+        $serverurl = static::MOODLE_APPS_PORTAL_URL . "/lib/ajax/service-nologin.php?lang=$settingslang";
         $query = 'args=' . urlencode(json_encode($args));
         $wsresponse = @json_decode($curl->post($serverurl, $query), true);
 
@@ -867,10 +883,23 @@ class api {
         if ($curlerrno = $curl->get_errno()) {
             // CURL connection error.
             debugging("Unexpected response from the Moodle Apps Portal server, CURL error number: $curlerrno");
+            if (!$ignorecache && $subscriptiondata !== false) {
+                return $subscriptiondata;
+            }
+            return null;
+        } else if (!empty($curl->error)) {
+            // CURL error without an error number.
+            debugging('Unexpected response from the Moodle Apps Portal server, CURL error: ' . $curl->error);
+            if (!$ignorecache && $subscriptiondata !== false) {
+                return $subscriptiondata;
+            }
             return null;
         } else if ($info['http_code'] != 200) {
             // Unexpected error from server.
-            debugging('Unexpected response from the Moodle Apps Portal server, HTTP code:' . $info['httpcode']);
+            debugging('Unexpected response from the Moodle Apps Portal server, HTTP code:' . $info['http_code']);
+            if (!$ignorecache && $subscriptiondata !== false) {
+                return $subscriptiondata;
+            }
             return null;
         } else if (!empty($wsresponse[0]['error'])) {
             // Unexpected error from Moodle Apps Portal.
@@ -882,7 +911,7 @@ class api {
         }
 
         $cache->set(0, $wsresponse[0]['data']);
-
+        set_config('subscriptioninfoupdated', time(), 'tool_mobile');
         return $wsresponse[0]['data'];
     }
 }
