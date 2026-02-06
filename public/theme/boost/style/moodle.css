@@ -29443,6 +29443,16 @@ img.icon {
   background-color: #d7e4d6;
 }
 
+/* Custom fields management */
+.path-admin .customfield-category-list .categorieslist tbody,
+.path-admin .customfield-category-list .categorieslist tr,
+.path-admin .customfield-category-list .categorieslist td {
+  border-style: inherit;
+}
+.path-admin .customfield-category-list .sharedcategorieslist .card.disabled {
+  opacity: 0.65;
+}
+
 /**
  Blocks
  */

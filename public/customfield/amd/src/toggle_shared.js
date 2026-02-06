@@ -53,6 +53,8 @@ export const init = () => {
             toggleCategory(categoryId, component, area, itemid, sharedStateToggle)
                 .then(() => {
                     sharedToggle.dataset.state = sharedStateToggle;
+                    const categoryElement = sharedToggle.closest('[data-category-id]');
+                    categoryElement.classList.toggle('disabled', !sharedStateToggle);
                     return pendingPromise.resolve();
                 })
                 .catch(Notification.exception);

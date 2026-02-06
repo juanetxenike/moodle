@@ -150,6 +150,7 @@ class management implements renderable, templatable {
                 'addfieldmenu' => $categoryaddfieldmenu ? $output->render($categoryaddfieldmenu) : '',
                 'toggle' => $categorysharetoggle,
                 'fields' => $categoryfields,
+                'extraclasses' => !$canedit && !$sharedtogglestatus ? 'disabled' : '',
             ];
 
             $categoriesdata[] = $categorydata;
