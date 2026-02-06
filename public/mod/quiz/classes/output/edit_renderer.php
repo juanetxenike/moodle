@@ -1001,9 +1001,21 @@ class edit_renderer extends \plugin_renderer_base {
         if (!$structure->can_be_edited()) {
             $disabled = 'disabled';
         }
-        return html_writer::span($this->action_link($url, $image, null, ['title' => $title,
-                    'class' => 'page_split_join cm-edit-action', 'disabled' => $disabled, 'data-action' => $action]),
-                'page_split_join_wrapper');
+        return html_writer::span(
+            $this->action_link(
+                $url,
+                $image,
+                null,
+                [
+                    'title' => $title,
+                    'aria-label' => $title,
+                    'class' => 'page_split_join cm-edit-action btn btn-sm icon-no-margin',
+                    'disabled' => $disabled,
+                    'data-action' => $action,
+                ]
+            ),
+            'page_split_join_wrapper'
+        );
     }
 
     /**
@@ -1021,13 +1033,11 @@ class edit_renderer extends \plugin_renderer_base {
         ];
         if ($structure->is_question_dependent_on_previous_slot($slot)) {
             $title = get_string('questiondependencyremove', 'quiz', $a);
-            $image = $this->pix_icon('t/locked', get_string('questiondependsonprevious', 'quiz'),
-                    'moodle', ['title' => '']);
+            $image = $this->pix_icon('t/locked', '');
             $action = 'removedependency';
         } else {
             $title = get_string('questiondependencyadd', 'quiz', $a);
-            $image = $this->pix_icon('t/unlocked', get_string('questiondependencyfree', 'quiz'),
-                    'moodle', ['title' => '']);
+            $image = $this->pix_icon('t/unlocked', '');
             $action = 'adddependency';
         }
 
@@ -1040,9 +1050,22 @@ class edit_renderer extends \plugin_renderer_base {
         if (!$structure->can_question_depend_on_previous_slot($slot)) {
             $extraclass = ' question_dependency_cannot_depend';
         }
-        return html_writer::span($this->action_link('#', $image, null, ['title' => $title,
-                'class' => 'cm-edit-action', 'disabled' => $disabled, 'data-action' => $action]),
-                'question_dependency_wrapper' . $extraclass);
+        return html_writer::span(
+            $this->action_link(
+                '#',
+                $image,
+                null,
+                [
+                    'title' => $title,
+                    'aria-label' => $title,
+                    'class' => 'cm-edit-action btn btn-link btn-sm icon-no-margin',
+                    'disabled' => $disabled,
+                    'data-action' => $action,
+                    'role' => 'button',
+                ]
+            ),
+            'question_dependency_wrapper' . $extraclass
+        );
     }
 
     /**
