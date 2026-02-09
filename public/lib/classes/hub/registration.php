@@ -517,7 +517,7 @@ class registration {
 
         // The most conservative limit for the redirect URL length is 2000 characters. Only pass parameters before
         // we reach this limit. The next registration update will update all fields.
-        // We will also update registration after we receive confirmation from moodle.net.
+        // We will also update registration after we receive confirmation from stats.moodle.org.
         $url = new moodle_url(HUB_MOODLEORGHUBURL . '/local/hub/siteregistration.php',
             ['token' => $hub->token, 'url' => $params['url']]);
         foreach ($params as $key => $value) {
@@ -618,8 +618,12 @@ class registration {
      * }
      *
      * @return array|null
+     * @deprecated since Moodle 5.2 - please do not use this function any more
      */
+    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.2', mdl: 'MDL-87350')]
     public static function get_moodlenet_info() {
+        \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
+
         try {
             return api::get_hub_info();
         } catch (moodle_exception $e) {
