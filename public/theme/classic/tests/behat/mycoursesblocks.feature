@@ -6,7 +6,8 @@ Feature: My courses page block layout in Classic theme
 
   Background:
     Given the following config values are set as admin:
-      | enablemyhome | 1 |
+      | enablemyhome    | 1 |
+      | enablemycourses | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email               |
       | student1 | Student   | 1        | student@example.com |

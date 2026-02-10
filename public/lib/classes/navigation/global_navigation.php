@@ -228,18 +228,21 @@ class global_navigation extends navigation_node {
             null,
             'currentcourse',
         );
-        $this->rootnodes['mycourses'] = $this->add(
-            get_string('mycourses'),
-            new url('/my/courses.php'),
-            self::TYPE_ROOTNODE,
-            null,
-            'mycourses',
-            new pix_icon('i/course', ''),
-        );
-        // We do not need to show this node in the breadcrumbs if the default homepage is mycourses.
-        // It will be automatically handled by the breadcrumb generator.
-        if ($defaulthomepage == HOMEPAGE_MYCOURSES) {
-            $this->rootnodes['mycourses']->mainnavonly = true;
+        // Only add mycourses node if it's enabled.
+        if (!empty($CFG->enablemycourses)) {
+            $this->rootnodes['mycourses'] = $this->add(
+                get_string('mycourses'),
+                new url('/my/courses.php'),
+                self::TYPE_ROOTNODE,
+                null,
+                'mycourses',
+                new pix_icon('i/course', ''),
+            );
+            // We do not need to show this node in the breadcrumbs if the default homepage is mycourses.
+            // It will be automatically handled by the breadcrumb generator.
+            if ($defaulthomepage == HOMEPAGE_MYCOURSES) {
+                $this->rootnodes['mycourses']->mainnavonly = true;
+            }
         }
 
         $this->rootnodes['courses'] = $this->add(
@@ -269,8 +272,10 @@ class global_navigation extends navigation_node {
 
         $this->rootnodes['currentcourse']->mainnavonly = true;
         if ($enrolledinanycourse) {
-            $this->rootnodes['mycourses']->isexpandable = true;
-            $this->rootnodes['mycourses']->showinflatnavigation = true;
+            if (!empty($CFG->enablemycourses)) {
+                $this->rootnodes['mycourses']->isexpandable = true;
+                $this->rootnodes['mycourses']->showinflatnavigation = true;
+            }
             if ($CFG->navshowallcourses) {
                 // When we show all courses we need to show both the my courses and the regular courses branch.
                 $this->rootnodes['courses']->isexpandable = true;
@@ -278,7 +283,9 @@ class global_navigation extends navigation_node {
         } else {
             $this->rootnodes['courses']->isexpandable = true;
         }
-        $this->rootnodes['mycourses']->forceopen = true;
+        if (!empty($CFG->enablemycourses)) {
+            $this->rootnodes['mycourses']->forceopen = true;
+        }
 
         $canviewcourseprofile = true;
 
@@ -1776,7 +1783,10 @@ class global_navigation extends navigation_node {
         $coursename = empty($CFG->navshowfullcoursenames) ? $shortname : $fullname;
 
         if ($coursetype == self::COURSE_CURRENT) {
-            if ($coursenode = $this->rootnodes['mycourses']->find($course->id, self::TYPE_COURSE)) {
+            if (
+                !empty($CFG->enablemycourses) &&
+                ($coursenode = $this->rootnodes['mycourses']->find($course->id, self::TYPE_COURSE))
+            ) {
                 return $coursenode;
             } else {
                 $coursetype = self::COURSE_OTHER;
@@ -1795,7 +1805,7 @@ class global_navigation extends navigation_node {
             $parent = $this->rootnodes['currentcourse'];
             $url = new url('/course/view.php', ['id' => $course->id]);
             $canexpandcourse = $this->can_expand_course($course);
-        } else if ($coursetype == self::COURSE_MY && !$forcegeneric) {
+        } else if ($coursetype == self::COURSE_MY && !$forcegeneric && !empty($CFG->enablemycourses)) {
             // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
             if (
                 !empty($CFG->navshowmycoursecategories)
@@ -2251,6 +2261,11 @@ class global_navigation extends navigation_node {
      */
     protected function load_courses_enrolled() {
         global $CFG;
+
+        // Don't load courses if My Courses is disabled.
+        if (empty($CFG->enablemycourses)) {
+            return;
+        }
 
         $limit = (int) $CFG->navcourselimit;
 

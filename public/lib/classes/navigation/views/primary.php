@@ -66,8 +66,9 @@ class primary extends view {
             }
 
             // Add the mycourses link.
-            $showcoursesnode = empty($this->page->theme->removedprimarynavitems) ||
-                !in_array('courses', $this->page->theme->removedprimarynavitems);
+            $showcoursesnode = !empty($CFG->enablemycourses) &&
+                (empty($this->page->theme->removedprimarynavitems) ||
+                !in_array('courses', $this->page->theme->removedprimarynavitems));
             if ($showcoursesnode) {
                 $this->add(get_string('mycourses'), new \moodle_url('/my/courses.php'), self::TYPE_ROOTNODE, null, 'mycourses');
             }

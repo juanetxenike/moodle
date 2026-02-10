@@ -85,6 +85,8 @@ final class primary_extend_test extends \advanced_testcase {
         set_config('enablemyhome', 0);
         set_config('enabledashboard', 1);
 
+        set_config('enablemycourses', 1);
+
         $PAGE = new \moodle_page();
         $PAGE->set_url('/');
 

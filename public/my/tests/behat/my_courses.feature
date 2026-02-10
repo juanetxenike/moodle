@@ -3,7 +3,8 @@ Feature: Run tests over my courses page
 
   Background:
     Given the following config values are set as admin:
-      | enablemyhome | 1 |
+      | enablemyhome    | 1 |
+      | enablemycourses | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email             |
       | user1    | User      | 1        | user1@example.com |

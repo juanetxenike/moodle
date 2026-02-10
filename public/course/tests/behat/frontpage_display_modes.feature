@@ -6,7 +6,8 @@ Feature: Site home displays items in different modes
 
   Background:
     Given the following config values are set as admin:
-      | enablemyhome | 1 |
+      | enablemyhome    | 1 |
+      | enablemycourses | 1 |
     And the following "categories" exist:
       | name                   | category | idnumber |
       | Category A             | 0        | CATA     |

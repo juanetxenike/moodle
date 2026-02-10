@@ -43,6 +43,7 @@ final class primary_test extends \advanced_testcase {
         $this->resetAfterTest();
         set_config('enablemyhome', 0);
         set_config('enabledashboard', 1);
+        set_config('enablemycourses', 1);
         if ($usertype == 'admin') {
             $this->setAdminUser();
         } else if ($usertype == 'guest') {

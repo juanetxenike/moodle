@@ -32,6 +32,7 @@ Feature: Welcome message on boost
   @accessibility
   Scenario: Login and be welcomed on the my courses page
     Given the following config values are set as admin:
+      | enablemycourses | 1 |
       | defaulthomepage | 3 |
     When I log in as "admin"
     Then I should see "My courses" in the "page-header" "region"

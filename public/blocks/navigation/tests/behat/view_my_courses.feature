@@ -6,7 +6,8 @@ Feature: View my courses in navigation block
 
   Background:
     Given the following config values are set as admin:
-      | enablemyhome | 1 |
+      | enablemyhome    | 1 |
+      | enablemycourses | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email |
       | student1 | Student | 1 | student1@example.com |

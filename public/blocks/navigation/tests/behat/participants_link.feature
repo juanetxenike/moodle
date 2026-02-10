@@ -22,6 +22,7 @@ Feature: Displaying the link to the Participants page
     And I turn editing mode on
     And the following config values are set as admin:
       | unaddableblocks | | theme_boost|
+      | enablemycourses | 1 |             |
     And I add the "Navigation" block if not present
     And I configure the "Navigation" block
     And I set the following fields to these values:
