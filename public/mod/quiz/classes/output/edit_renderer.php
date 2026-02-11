@@ -892,9 +892,15 @@ class edit_renderer extends \plugin_renderer_base {
      * @return string The markup for the move action.
      */
     public function question_move_icon(structure $structure, $slot) {
-        return html_writer::link(new \moodle_url('#'),
-            $this->pix_icon('i/dragdrop', get_string('move'), 'moodle', ['class' => 'iconsmall', 'title' => '']),
-            ['class' => 'editing_move', 'data-action' => 'move']
+        $slotnumber = $structure->get_displayed_number_for_slot($slot);
+        return html_writer::link(
+            new \moodle_url('#'),
+            $this->pix_icon('i/dragdrop', '', 'moodle', ['class' => 'iconsmall']),
+            [
+                'class' => 'editing_move',
+                'data-action' => 'move',
+                'aria-label' => get_string('movequestionnumber', 'quiz', $slotnumber),
+            ]
         );
     }
 
@@ -986,13 +992,14 @@ class edit_renderer extends \plugin_renderer_base {
         $url = new \moodle_url('repaginate.php', ['quizid' => $structure->get_quizid(),
                 'slot' => $slot, 'repag' => $insertpagebreak ? 2 : 1, 'sesskey' => sesskey()]);
 
+        $slotname = $structure->get_displayed_number_for_slot($slot);
         if ($insertpagebreak) {
-            $title = get_string('addpagebreak', 'quiz');
-            $image = $this->image_icon('e/insert_page_break', $title);
+            $title = get_string('addpagebreakafter', 'quiz', $slotname);
+            $image = $this->image_icon('e/insert_page_break', '');
             $action = 'addpagebreak';
         } else {
-            $title = get_string('removepagebreak', 'quiz');
-            $image = $this->image_icon('e/remove_page_break', $title);
+            $title = get_string('removepagebreakafter', 'quiz', $slotname);
+            $image = $this->image_icon('e/remove_page_break', '');
             $action = 'removepagebreak';
         }
 
@@ -1012,6 +1019,7 @@ class edit_renderer extends \plugin_renderer_base {
                     'class' => 'page_split_join cm-edit-action btn btn-sm icon-no-margin',
                     'disabled' => $disabled,
                     'data-action' => $action,
+                    'role' => 'button',
                 ]
             ),
             'page_split_join_wrapper'
@@ -1328,7 +1336,7 @@ class edit_renderer extends \plugin_renderer_base {
         ], 'moodle');
 
         $this->page->requires->strings_for_js([
-                'addpagebreak',
+                'addpagebreakafter',
                 'cannotremoveallsectionslots',
                 'cannotremoveslots',
                 'confirmremovesectionheading',
@@ -1339,7 +1347,7 @@ class edit_renderer extends \plugin_renderer_base {
                 'sectionheadingedit',
                 'sectionheadingremove',
                 'sectionnoname',
-                'removepagebreak',
+                'removepagebreakafter',
                 'questiondependencyadd',
                 'questiondependencyfree',
                 'questiondependencyremove',

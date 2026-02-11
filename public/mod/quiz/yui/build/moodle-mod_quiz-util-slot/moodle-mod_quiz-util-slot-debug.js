@@ -335,17 +335,21 @@ Y.Moodle.mod_quiz.util.slot = {
             // Get the correct title.
             var action = '';
             var iconname = '';
+            var actionStr = '';
+            var slotNumber = this.getNumber(slot);
             if (Y.Moodle.mod_quiz.util.page.isPage(nextitem)) {
                 action = 'removepagebreak';
+                actionStr = 'removepagebreakafter';
                 iconname = 'e/remove_page_break';
             } else {
                 action = 'addpagebreak';
+                actionStr = 'addpagebreakafter';
                 iconname = 'e/insert_page_break';
             }
 
             // Update the link and image titles
-            pagebreaklink.set('title', M.util.get_string(action, 'quiz'));
-            pagebreaklink.set('aria-label', M.util.get_string(action, 'quiz'));
+            pagebreaklink.set('title', M.util.get_string(actionStr, 'quiz', slotNumber));
+            pagebreaklink.set('aria-label', M.util.get_string(actionStr, 'quiz', slotNumber));
             pagebreaklink.setData('action', action);
             // Update the image title.
             var icon = pagebreaklink.one(this.SELECTORS.ICON);
