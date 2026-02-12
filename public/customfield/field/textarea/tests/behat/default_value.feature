@@ -30,7 +30,7 @@ Feature: Default value for the textarea custom field can contain images
       | forcelogin | 0 |
     And I log in as "admin"
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
-    And I click on "Add a new custom field" "link"
+    And I click on "Add field" "link"
     And I click on "Text area" "link"
     And I set the following fields to these values:
       | Name       | Test field |

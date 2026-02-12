@@ -37,6 +37,9 @@ class behat_customfield extends behat_base {
             new behat_component_named_selector('Category', [
                 ".//*[@data-region='list-page']//*[@data-category-name=%locator%]",
             ]),
+            new behat_component_named_selector('Category header', [
+                ".//*[@data-region='list-page']//*[@data-category-name=%locator%]//*[@data-region='category-header']",
+            ]),
         ];
     }
 }

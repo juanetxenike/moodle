@@ -14,7 +14,7 @@ Feature: Managers can manage course custom fields text
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
 
   Scenario: Create a custom course text field
-    When I click on "Add a new custom field" "link"
+    When I click on "Add field" "link"
     And I click on "Short text" "link"
     And I set the following fields to these values:
       | Name       | Test field |
@@ -24,34 +24,32 @@ Feature: Managers can manage course custom fields text
     And I log out
 
   Scenario: Edit a custom course text field
-    When I click on "Add a new custom field" "link"
+    When I click on "Add field" "link"
     And I click on "Short text" "link"
     And I set the following fields to these values:
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Short text" "dialogue"
-    And I press "Edit custom field: Test field"
+    And I choose the "Edit" item in the "Actions" action menu of the "Test field" "table_row"
     And I set the following fields to these values:
       | Name | Edited field |
     And I click on "Save changes" "button" in the "Updating Test field" "dialogue"
     Then I should see "Edited field"
     And I navigate to "Reports > Logs" in site administration
     And I press "Get these logs"
-    And I log out
 
   Scenario: Delete a custom course text field
-    When I click on "Add a new custom field" "link"
+    When I click on "Add field" "link"
     And I click on "Short text" "link"
     And I set the following fields to these values:
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Short text" "dialogue"
-    And I press "Delete custom field: Test field"
+    And I choose the "Delete" item in the "Actions" action menu of the "Test field" "table_row"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
     And I wait until the page is ready
     And I wait until "Test field" "text" does not exist
     Then I should not see "Test field"
-    And I log out
 
   Scenario: A text field with a link setting must show link on course listing
     Given the following "users" exist:
@@ -64,7 +62,7 @@ Feature: Managers can manage course custom fields text
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
-    And I click on "Add a new custom field" "link"
+    And I click on "Add field" "link"
     And I click on "Short text" "link"
     And I set the following fields to these values:
       | Name       | See more on website       |
@@ -94,7 +92,7 @@ Feature: Managers can manage course custom fields text
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
-    And I click on "Add a new custom field" "link"
+    And I click on "Add field" "link"
     And I click on "Short text" "link"
     And I set the following fields to these values:
       | Name       | Test field |
@@ -121,7 +119,7 @@ Feature: Managers can manage course custom fields text
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
-    And I click on "Add a new custom field" "link"
+    And I click on "Add field" "link"
     And I click on "Short text" "link"
     And I set the following fields to these values:
       | Name          | Test field  |

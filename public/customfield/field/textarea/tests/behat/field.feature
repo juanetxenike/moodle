@@ -14,7 +14,7 @@ Feature: Managers can manage course custom fields textarea
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
 
   Scenario: Create a custom course textarea field
-    When I click on "Add a new custom field" "link"
+    When I click on "Add field" "link"
     And I click on "Text area" "link"
     And I set the following fields to these values:
       | Name       | Test field |
@@ -24,28 +24,26 @@ Feature: Managers can manage course custom fields textarea
     And I log out
 
   Scenario: Edit a custom course textarea field
-    When I click on "Add a new custom field" "link"
+    When I click on "Add field" "link"
     And I click on "Text area" "link"
     And I set the following fields to these values:
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Text area" "dialogue"
-    And I press "Edit custom field: Test field"
+    And I choose the "Edit" item in the "Actions" action menu of the "Test field" "table_row"
     And I set the following fields to these values:
       | Name | Edited field |
     And I click on "Save changes" "button" in the "Updating Test field" "dialogue"
     Then I should see "Edited field"
     And I should not see "Test field"
-    And I log out
 
   Scenario: Delete a custom course textarea field
-    When I click on "Add a new custom field" "link"
+    When I click on "Add field" "link"
     And I click on "Text area" "link"
     And I set the following fields to these values:
       | Name       | Test field |
       | Short name | testfield  |
     And I click on "Save changes" "button" in the "Adding a new Text area" "dialogue"
-    And I press "Delete custom field: Test field"
+    And I choose the "Delete" item in the "Actions" action menu of the "Test field" "table_row"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
     Then I should not see "Test field"
-    And I log out

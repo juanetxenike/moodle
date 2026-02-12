@@ -20,7 +20,7 @@ Feature: Managers can convert categories for any entity custom field category to
   Scenario: Convert a course custom field category to shared custom fields
     Given I log in as "admin"
     When I navigate to "Courses > Default settings > Course custom fields" in site administration
-    And I click on "Convert to shared custom fields" "button" in the "Category for course 1" "core_customfield > Category"
+    And I choose the "Convert to shared" item in the "Actions" action menu of the "Category for course 1" "core_customfield > Category header"
     And I should see "Are you sure you want to convert this category" in the "Convert to shared custom fields?" "dialogue"
     And I click on "Proceed" "button" in the "Convert to shared custom fields?" "dialogue"
     Then "The category has been successfully converted to shared custom fields" "toast_message" should be visible
@@ -33,7 +33,7 @@ Feature: Managers can convert categories for any entity custom field category to
   Scenario: Cannot convert category with duplicate custom field short names in shared category
     Given I log in as "admin"
     When I navigate to "Courses > Default settings > Course custom fields" in site administration
-    And I click on "Convert to shared custom fields" "button" in the "Category for course 2" "core_customfield > Category"
+    And I choose the "Convert to shared" item in the "Actions" action menu of the "Category for course 2" "core_customfield > Category header"
     Then I should see "One or more short names in this category already exist as shared custom fields." in the "Cannot convert to shared custom fields" "dialogue"
     And I click on "Close" "button" in the "Cannot convert to shared custom fields" "dialogue"
     And "Enable Category for course 2" "checkbox" should not exist in the "Category for course 2" "core_customfield > Category"
