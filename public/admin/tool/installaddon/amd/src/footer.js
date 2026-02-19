@@ -1,5 +1,3 @@
-<?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,14 +14,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     tool_installaddon
- * @copyright   2013 David Mudrak <david@moodle.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Activity chooser footer handlers for tool_installaddon.
+ *
+ * @module     tool_installaddon/footer
+ * @copyright  2026 Safat Shahin <safat.shahin@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component  = 'tool_installaddon';
-$plugin->version    = 2026031300;
-$plugin->requires   = 2025092600;
-$plugin->maturity   = MATURITY_STABLE;
+// The footer is a plain link, so the chooser does not need extra click handling.
+export const footerClickListener = () => null;

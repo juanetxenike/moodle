@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,24 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Puts the plugin actions into the admin settings tree.
+ * Public API for tool_installaddon.
  *
  * @package     tool_installaddon
- * @copyright   2013 David Mudrak <david@moodle.com>
+ * @copyright   2026 Safat Shahin <safat.shahin@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use core_course\local\entity\activity_chooser_footer;
 
-if ($hassiteconfig and empty($CFG->disableupdateautodeploy)) {
+/**
+ * Build activity chooser footer content for Marketplace.
+ *
+ * @param int $courseid The selected course id.
+ * @param int $sectionid The selected section id.
+ * @return activity_chooser_footer
+ */
+function tool_installaddon_custom_chooser_footer(int $courseid, int $sectionid): activity_chooser_footer {
+    global $OUTPUT;
+
     $installer = tool_installaddon_installer::instance();
-    $ADMIN->add('modules', new admin_externalpage(
-        'tool_installaddon_marketplace',
-        get_string('marketplaceadminlinktext', 'tool_installaddon'),
-        $installer->get_marketplace_url()->out(false)
-    ), 'modsettings');
+    $marketplaceurl = $installer->get_marketplace_url();
 
-    $ADMIN->add('modules', new admin_externalpage('tool_installaddon_index',
-        get_string('installaddons', 'tool_installaddon'),
-        "$CFG->wwwroot/$CFG->admin/tool/installaddon/index.php"), 'modsettings');
+    $renderedfooter = $OUTPUT->render_from_template('tool_installaddon/chooser_footer', [
+        'url' => $marketplaceurl->out(false),
+    ]);
+
+    return new activity_chooser_footer(
+        'tool_installaddon/footer',
+        $renderedfooter
+    );
 }
