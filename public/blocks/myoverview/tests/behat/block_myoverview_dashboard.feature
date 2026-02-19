@@ -323,6 +323,66 @@ Feature: The my overview block allows users to easily access their courses
     When I click on "Summary" "link" in the "Course overview" "block"
     Then I should not see "Category 1" in the "Course overview" "block"
 
+  Scenario: Users with no permissions do not see any persistent CTA on the dashboard when enrolled in a course
+    When I am on the "Homepage" page logged in as "student1"
+    Then I should not see "Create course" in the "Course overview" "block"
+    And I should not see "Manage courses" in the "Course overview" "block"
+    And I should not see "Request a course" in the "Course overview" "block"
+
+  Scenario: Users with permissions to create and manage courses see persistent CTA when the block is in the drawer
+    Given the following "blocks" exist:
+      | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
+      | myoverview | System       | 1         | my-index        | side-post     |
+    And the following "users" exist:
+      | username | firstname | lastname | email               |
+      | manager1 | Manager   | X        | manager@example.com |
+    And the following "role assigns" exist:
+      | user     | role    | contextlevel | reference |
+      | manager1 | manager | System       |           |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | manager1 | C1     | manager |
+    When I am on the "Homepage" page logged in as "manager1"
+    Then "Manage courses" "button" should exist in the "Course overview" "block"
+    And "Create course" "button" should exist in the "Course overview" "block"
+
+  Scenario: Users with permissions to create and manage courses see persistent CTA on the dashboard
+    Given the following "users" exist:
+      | username | firstname | lastname | email               |
+      | manager1 | Manager   | X        | manager@example.com |
+    And the following "role assigns" exist:
+      | user     | role    | contextlevel | reference |
+      | manager1 | manager | System       |           |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | manager1 | C1     | manager |
+    When I am on the "Homepage" page logged in as "manager1"
+    Then "Manage courses" "button" should exist in the "Course overview" "block"
+    And "Create course" "button" should exist in the "Course overview" "block"
+    And I click on "Create course" "button" in the "Course overview" "block"
+    And I should see "Add a new course"
+
+  Scenario: Users with permissions to request a course see persistent request CTA on the dashboard
+    Given the following "permission overrides" exist:
+      | capability            | permission | role | contextlevel | reference |
+      | moodle/course:request | Allow      | user | System       |           |
+    When I am on the "Homepage" page logged in as "student1"
+    Then "Request a course" "button" should exist in the "Course overview" "block"
+
+  Scenario: Users with permissions to create and manage courses see persistent CTA on the My courses page
+    Given the following "users" exist:
+      | username | firstname | lastname | email               |
+      | manager1 | Manager   | X        | manager@example.com |
+    And the following "role assigns" exist:
+      | user     | role    | contextlevel | reference |
+      | manager1 | manager | System       |           |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | manager1 | C1     | manager |
+    When I am on the "My courses" page logged in as "manager1"
+    Then "Manage courses" "button" should exist in the "Course overview" "block"
+    And "Create course" "button" should exist in the "Course overview" "block"
+
   @accessibility
   Scenario: The My courses page must meet accessibility standards
     When I am on the "My courses" page logged in as "student1"

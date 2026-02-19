@@ -2745,12 +2745,6 @@ body.dragging {
 }
 
 .page-mycourses {
-    .block_myoverview {
-        .block-cards {
-            border-top: 1px solid $border-color;
-            padding-top: map-get($spacers, 2);
-        }
-    }
     // Boost theme styling only (drawers not used in classic).
     .drawers {
         .block_myoverview {
