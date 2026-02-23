@@ -102,8 +102,11 @@ class edit_renderer extends \plugin_renderer_base {
 
             if ($structure->is_last_section($section)) {
                 $output .= \html_writer::start_div('last-add-menu');
-                $output .= html_writer::tag('span', $this->add_menu_actions($structure, 0,
-                        $pageurl, $contexts, $pagevars), ['class' => 'add-menu-outer']);
+                $output .= html_writer::tag(
+                    'span',
+                    $this->add_menu_actions($structure, 0, $pageurl, $contexts, $pagevars),
+                    ['class' => 'add-menu-outer pe-3']
+                );
                 $output .= \html_writer::end_div();
             }
 
@@ -591,9 +594,11 @@ class edit_renderer extends \plugin_renderer_base {
 
         if ($structure->is_first_slot_on_page($slot)) {
             // Add the add-menu at the page level.
-            $addmenu = html_writer::tag('span', $this->add_menu_actions($structure,
-                    $pagenumber, $pageurl, $contexts, $pagevars),
-                    ['class' => 'add-menu-outer']);
+            $addmenu = html_writer::tag(
+                'span',
+                $this->add_menu_actions($structure, $pagenumber, $pageurl, $contexts, $pagevars),
+                ['class' => 'add-menu-outer pe-2']
+            );
 
             $addquestionform = $this->add_question_form($structure,
                     $pagenumber, $pageurl, $pagevars);
