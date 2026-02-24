@@ -1788,5 +1788,24 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2026030600.01);
     }
 
+    if ($oldversion < 2026030600.02) {
+        require_once($CFG->dirroot . '/lib/db/upgradelib.php');
+
+        // Check if the moodlenetprofile column exists in the user table.
+        $table = new xmldb_table('user');
+        $field = new xmldb_field('moodlenetprofile');
+
+        if ($dbman->field_exists($table, $field)) {
+            // Move the MoodleNet profile.
+            moodlenet_migrate_profile_field();
+
+            // Remove the moodlenetprofile column from the user table.
+            $dbman->drop_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2026030600.02);
+    }
+
     return true;
 }
