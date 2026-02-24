@@ -169,6 +169,33 @@ class profile_manager {
         return 'moodlenetprofile';
     }
 
+    /**
+     * Create MoodleNet user profile fields (category and text field).
+     * This method is called during plugin installation to ensure the required
+     * profile field exists from the start.
+     */
+    public static function create_moodlenet_user_profile_fields(): void {
+        global $DB;
+
+        // This checks if the category and field already exist before creating them.
+        if (!self::check_profile_category()) {
+            $categoryid = self::create_user_profile_category();
+            self::create_user_profile_text_field($categoryid);
+        } else {
+            // Category exists, get its ID and check if field exists.
+            $category = $DB->get_record('user_info_category', [
+                'name' => self::get_category_name(),
+            ]);
+
+            $profilefield = $DB->record_exists('user_info_field', [
+                'shortname' => self::get_profile_field_name(),
+                'categoryid' => $category->id,
+            ]);
+            if (!$profilefield) {
+                self::create_user_profile_text_field($category->id);
+            }
+        }
+    }
 
     /**
      * Create a user profile field to hold the moodlenet profile information.
@@ -194,7 +221,7 @@ class profile_manager {
             'forceunique' => 1,
             'visible' => 2,
             'param1' => 30,
-            'param2' => 2048
+            'param2' => 2048,
         ];
         $profileclass->define_save($data);
     }

@@ -53,8 +53,8 @@ $string['instanceplaceholder'] = 'a1b2c3d4e5f6-example@moodle.net';
 $string['invalidmoodlenetprofile'] = '$userprofile is not correctly formatted';
 $string['missinginvalidpostdata'] = 'The resource information from MoodleNet is either missing, or is in an incorrect format.
 If this happens repeatedly, please contact the site administrator.';
-$string['mnetprofile'] = 'MoodleNet profile';
-$string['mnetprofiledesc'] = '<p>Enter your MoodleNet profile details here to be redirected to your profile while visiting MoodleNet.</p>';
+$string['mnetprofile'] = 'MoodleNet profile ID';
+$string['mnetprofiledesc'] = 'Your MoodleNet profile ID links your MoodleNet profile with this site.';
 $string['moodlenetnotenabled'] = 'The MoodleNet integration must be enabled in Site administration / MoodleNet before resource imports can be processed.';
 $string['moodlenetsettings'] = 'MoodleNet inbound settings';
 $string['notification'] = 'You are about to import the content "{$a->name} ({$a->type})" into your site. Select the course in which it should be added, or <a href="{$a->cancellink}">cancel</a>.';

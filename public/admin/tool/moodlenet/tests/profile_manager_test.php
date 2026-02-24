@@ -136,4 +136,48 @@ final class profile_manager_test extends \advanced_testcase {
         $fieldname = \tool_moodlenet\profile_manager::get_profile_field_name();
         $this->assertEquals($profilename, $userdata->{'profile_field_' . $fieldname});
     }
+
+    /**
+     * Test creation of MoodleNet user profile fields.
+     *
+     * @covers ::create_moodlenet_user_profile_fields
+     */
+    public function test_create_moodlenet_user_profile_fields(): void {
+        global $CFG, $DB;
+        $this->resetAfterTest();
+
+        require_once($CFG->dirroot . '/user/profile/lib.php');
+
+        $categoryname = \tool_moodlenet\profile_manager::get_category_name();
+        $fieldname = \tool_moodlenet\profile_manager::get_profile_field_name();
+
+        // Verify category and field don't exist initially.
+        $categorycount = $DB->count_records('user_info_category', ['name' => $categoryname]);
+        $this->assertEquals(0, $categorycount);
+        $fieldcount = $DB->count_records('user_info_field', ['shortname' => $fieldname]);
+        $this->assertEquals(0, $fieldcount);
+
+        // Call the method to create category and field.
+        \tool_moodlenet\profile_manager::create_moodlenet_user_profile_fields();
+
+        // Verify category was created.
+        $categorycount = $DB->count_records('user_info_category', ['name' => $categoryname]);
+        $this->assertEquals(1, $categorycount);
+        $category = $DB->get_record('user_info_category', ['name' => $categoryname]);
+        $categoryid = $category->id;
+
+        // Verify field was created in the correct category.
+        $fieldcount = $DB->count_records('user_info_field', [
+            'shortname' => $fieldname,
+            'categoryid' => $categoryid,
+        ]);
+        $this->assertEquals(1, $fieldcount);
+
+        // Verify the method is idempotent (can be called multiple times).
+        \tool_moodlenet\profile_manager::create_moodlenet_user_profile_fields();
+        $categorycount = $DB->count_records('user_info_category', ['name' => $categoryname]);
+        $this->assertEquals(1, $categorycount);
+        $fieldcount = $DB->count_records('user_info_field', ['shortname' => $fieldname]);
+        $this->assertEquals(1, $fieldcount);
+    }
 }

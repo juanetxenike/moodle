@@ -31,5 +31,11 @@ namespace tool_moodlenet\task;
 class post_install extends \core\task\adhoc_task {
     public function execute() {
         set_config('activitychooseractivefooter', 'tool_moodlenet');
+
+        // Create the MoodleNet custom profile field for new installations.
+        // This checks if the category and field already exist before creating them.
+        if (!PHPUNIT_TEST) {
+            \tool_moodlenet\profile_manager::create_moodlenet_user_profile_fields();
+        }
     }
 }
