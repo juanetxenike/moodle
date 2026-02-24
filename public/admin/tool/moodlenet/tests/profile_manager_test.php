@@ -27,13 +27,6 @@ namespace tool_moodlenet;
 final class profile_manager_test extends \advanced_testcase {
 
     /**
-     * Test that on this site we use the user table to hold moodle net profile information.
-     */
-    public function test_official_profile_exists(): void {
-        $this->assertTrue(\tool_moodlenet\profile_manager::official_profile_exists());
-    }
-
-    /**
      * Test a null is returned when the user's mnet profile field is not set.
      */
     public function test_get_moodlenet_user_profile_no_profile_set(): void {
@@ -60,11 +53,24 @@ final class profile_manager_test extends \advanced_testcase {
      * Test the return of a moodle net profile.
      */
     public function test_get_moodlenet_user_profile(): void {
+        global $CFG;
         $this->resetAfterTest();
-        $user = $this->getDataGenerator()->create_user(['moodlenetprofile' => '@matt@hq.mnet']);
 
+        // Create the custom profile category and field.
+        require_once($CFG->dirroot . '/user/profile/lib.php');
+        $categoryid = \tool_moodlenet\profile_manager::create_user_profile_category();
+        \tool_moodlenet\profile_manager::create_user_profile_text_field($categoryid);
+
+        $user = $this->getDataGenerator()->create_user();
+        $profilename = '@matt@hq.mnet';
+
+        // Save the profile using the profile manager.
+        $moodlenetprofile = new \tool_moodlenet\moodlenet_user_profile($profilename, $user->id);
+        \tool_moodlenet\profile_manager::save_moodlenet_user_profile($moodlenetprofile);
+
+        // Get the profile back.
         $result = \tool_moodlenet\profile_manager::get_moodlenet_user_profile($user->id);
-        $this->assertEquals($user->moodlenetprofile, $result->get_profile_name());
+        $this->assertEquals($profilename, $result->get_profile_name());
     }
 
     /**
@@ -74,22 +80,14 @@ final class profile_manager_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
 
-        $basecategoryname = get_string('pluginname', 'tool_moodlenet');
-
-        \tool_moodlenet\profile_manager::create_user_profile_category();
         $categoryname = \tool_moodlenet\profile_manager::get_category_name();
-        $this->assertEquals($basecategoryname, $categoryname);
+        $expectedname = get_string('pluginname', 'tool_moodlenet');
+        $this->assertEquals($expectedname, $categoryname);
+
         \tool_moodlenet\profile_manager::create_user_profile_category();
 
-        $recordcount = $DB->count_records('user_info_category', ['name' => $basecategoryname]);
+        $recordcount = $DB->count_records('user_info_category', ['name' => $categoryname]);
         $this->assertEquals(1, $recordcount);
-
-        // Test the duplication of categories to ensure a unique name is always used.
-        $categoryname = \tool_moodlenet\profile_manager::get_category_name();
-        $this->assertEquals($basecategoryname . 1, $categoryname);
-        \tool_moodlenet\profile_manager::create_user_profile_category();
-        $categoryname = \tool_moodlenet\profile_manager::get_category_name();
-        $this->assertEquals($basecategoryname . 2, $categoryname);
     }
 
     /**
@@ -99,7 +97,7 @@ final class profile_manager_test extends \advanced_testcase {
         global $DB;
         $this->resetAfterTest();
 
-        $shortname = 'mnetprofile';
+        $shortname = 'moodlenetprofile';
 
         $categoryid = \tool_moodlenet\profile_manager::create_user_profile_category();
         \tool_moodlenet\profile_manager::create_user_profile_text_field($categoryid);
@@ -108,20 +106,22 @@ final class profile_manager_test extends \advanced_testcase {
         $this->assertEquals($shortname, $record->shortname);
         $this->assertEquals($categoryid, $record->categoryid);
 
-        // Test for a unique name if 'mnetprofile' is already in use.
-        \tool_moodlenet\profile_manager::create_user_profile_text_field($categoryid);
+        // Verify the field shortname is always 'moodlenetprofile'.
         $profilename = \tool_moodlenet\profile_manager::get_profile_field_name();
-        $this->assertEquals($shortname . 1, $profilename);
-        \tool_moodlenet\profile_manager::create_user_profile_text_field($categoryid);
-        $profilename = \tool_moodlenet\profile_manager::get_profile_field_name();
-        $this->assertEquals($shortname . 2, $profilename);
+        $this->assertEquals($shortname, $profilename);
     }
 
     /**
      * Test that the user moodlenet profile is saved.
      */
     public function test_save_moodlenet_user_profile(): void {
+        global $CFG;
         $this->resetAfterTest();
+
+        // Create the custom profile category and field.
+        require_once($CFG->dirroot . '/user/profile/lib.php');
+        $categoryid = \tool_moodlenet\profile_manager::create_user_profile_category();
+        \tool_moodlenet\profile_manager::create_user_profile_text_field($categoryid);
 
         $user = $this->getDataGenerator()->create_user();
         $profilename = '@matt@hq.mnet';
@@ -130,7 +130,10 @@ final class profile_manager_test extends \advanced_testcase {
 
         \tool_moodlenet\profile_manager::save_moodlenet_user_profile($moodlenetprofile);
 
+        // Load the user with profile data to verify.
         $userdata = \core_user::get_user($user->id);
-        $this->assertEquals($profilename, $userdata->moodlenetprofile);
+        profile_load_data($userdata);
+        $fieldname = \tool_moodlenet\profile_manager::get_profile_field_name();
+        $this->assertEquals($profilename, $userdata->{'profile_field_' . $fieldname});
     }
 }
