@@ -21,6 +21,11 @@ input.tool-mfa-verify-submit,
     margin-top: 1rem;
 }
 
+#mfalist .icon-circle .icon {
+    width: 64px;
+    height: 64px;
+}
+
 @media (max-width: 991.98px) {
     .tool-mfa-verify-container {
         padding-right: 16px;
