@@ -35,6 +35,12 @@ if (!$CFG->enablemobilewebservice) {
 
 $subscriptiondata = \tool_mobile\api::get_subscription_information(false, true, 5);
 
+$returnto = optional_param('returnto', '', PARAM_LOCALURL);
+if (!empty($returnto)) {
+    $returnurl = (new \moodle_url($returnto))->out(true);
+    redirect($returnurl);
+}
+
 echo $OUTPUT->header();
 
 if (empty($subscriptiondata)) {

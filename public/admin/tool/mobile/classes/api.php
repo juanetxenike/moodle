@@ -816,6 +816,8 @@ class api {
     public static function get_subscription_information($forcecache = false, $ignorecache = false, $timeout = 10): ?array {
         global $CFG;
 
+        require_once($CFG->libdir . '/filelib.php');
+
         $timeout = min(30, $timeout);
         // Manage cache of the subscription information to avoid requesting it too often to the Moodle Apps Portal.
         $cache = \cache::make('tool_mobile', 'subscriptioninfo');
@@ -869,7 +871,7 @@ class api {
         ];
 
         // Ask the Moodle Apps Portal for the subscription information.
-        $curl = new curl();
+        $curl = new \curl();
         $curl->setopt([
             'CURLOPT_TIMEOUT' => $timeout,
             'CURLOPT_CONNECTTIMEOUT' => $timeout,

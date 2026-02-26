@@ -31,27 +31,31 @@
 
     Context variables required for this template:
     * message A cleaned string (use clean_text()) to display.
-    * extraclasses Additional classes to apply to the notification.
+    * extraclasses Additional classes to apply to the notification (for example "mt-4").
     * buttonstr Text for the optional action button.
     * buttonurl URL for the optional action button.
     * extrabuttonclasses Additional classes for the button element.
-    * icon Optional icon definition (with "icon" and "component").
+    * icon Optional boolean/section to indicate if the leading info icon should be displayed.
+    * insettings Optional boolean. When true, the alert is wrapped in form-item markup for use in admin settings pages.
 
     Example context (json):
     {
         "message": "Your site is not registered in Moodle Apps Portal.",
-        "extraclasses": "alert-danger",
-        "buttonstr": "Register",
-        "buttonurl": "https://apps.moodle.com/register",
-        "extrabuttonclasses": "bg-danger",
-        "icon": {
-            "icon": "i/circleinfo",
-            "component": "core"
-        }
+        "extraclasses": "mt-4",
+        "buttonstr": "View plans",
+        "buttonurl": "https://apps.moodle.com",
+        "extrabuttonclasses": "",
+        "icon": true,
+        "insettings": true
     }
 }}
-
-<div class="alert alert-warning {{extraclasses}} mt-4">
+{{#insettings}}
+<div class="form-item row">
+    <div class="form-label col-sm-3 text-sm-end">
+    </div>
+    <div class="form-setting col-sm-9">
+{{/insettings}}
+<div class="alert alert-warning {{extraclasses}} {{^insettings}}mt-4{{/insettings}}">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
     <div class="d-flex align-items-center mb-3 mb-md-0">
     {{#icon}}
@@ -69,3 +73,7 @@
     {{/buttonurl}}
     </div>
 </div>
+{{#insettings}}
+    </div>
+</div>
+{{/insettings}}

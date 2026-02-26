@@ -30,3 +30,18 @@
 #page-admin-tool-mobile-subscription progress {
     width: 100%;
 }
+
+.tool_mobile-settings-alert a:not(.btn) {
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.tool_mobile-settings-alert a:not(.btn):hover {
+    text-decoration: underline;
+}
+
+.tool_mobile-settings-alert img.icon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: .5rem;
+}
