@@ -66,6 +66,9 @@ final class course_navigation_test extends route_testcase {
      * @return \Generator
      */
     public static function cm_next_provider(): \Generator {
+        global $CFG;
+        require_once("$CFG->libdir/resourcelib.php");
+
         $emailavailability = '{"op":"&","c":[{"type":"profile","sf":"email","op":"isequalto","v":"';
         yield 'Simple case (teacher)' => [
             'cmsdef' => [
@@ -454,6 +457,228 @@ final class course_navigation_test extends route_testcase {
                 'id' => '2',
             ],
         ];
+        yield 'Restricted section visible - Simple case (editingteacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'section', // Editing teachers can see the restricted section.
+                'id' => '2',
+            ],
+            'role' => 'editingteacher',
+            'sectionsdef' => [
+                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[true]}'],
+            ],
+        ];
+        yield 'Restricted section visible - Simple case (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'section',
+                'id' => '2',
+            ],
+            'sectionsdef' => [
+                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[true]}'],
+            ],
+        ];
+        yield 'Restricted section hidden - Simple case (editingteacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'section', // Editing teachers can see the restricted section.
+                'id' => '2',
+            ],
+            'role' => 'editingteacher',
+            'sectionsdef' => [
+                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[false]}'],
+            ],
+        ];
+        yield 'Restricted section hidden - Simple case (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'course', // Students cannot see the restricted section.
+            ],
+            'sectionsdef' => [
+                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[false]}'],
+            ],
+        ];
+        yield 'Restricted section hidden - Simple case when user meets the restriction (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'section', // Student meets the restriction, so the section should be visible.
+                'id' => '2',
+            ],
+            'sectionsdef' => [
+                ['section' => 2, 'available' => $emailavailability . 'student@moodle.invalid"}],"showc":[false]}'],
+            ],
+        ];
+        yield 'Resource: Display auto (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_AUTO]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display embed (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_EMBED]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display frame (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_FRAME]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display new (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_NEW]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display download (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_DOWNLOAD]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display open (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_OPEN]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display popup (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'resource', 'options' => [
+                    'display' => RESOURCELIB_DISPLAY_POPUP,
+                    'popupwidth' => 800,
+                    'popupheight' => 600,
+                ]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display auto (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_AUTO]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display embed (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_EMBED]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display frame (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_FRAME]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display new (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_NEW]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display open (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_OPEN]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display popup (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'url', 'options' => [
+                    'display' => RESOURCELIB_DISPLAY_POPUP,
+                    'popupwidth' => 800,
+                    'popupheight' => 600,
+                ]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
         yield 'With module not supporting FEATURE_CAN_DISPLAY (student)' => [
             'cmsdef' => [
                 ['name' => 'cm1'],
@@ -524,6 +749,9 @@ final class course_navigation_test extends route_testcase {
      * @return \Generator
      */
     public static function cm_previous_provider(): \Generator {
+        global $CFG;
+        require_once("$CFG->libdir/resourcelib.php");
+
         $emailavailability = '{"op":"&","c":[{"type":"profile","sf":"email","op":"isequalto","v":"';
         yield 'Simple case (teacher)' => [
             'cmsdef' => [
@@ -926,42 +1154,268 @@ final class course_navigation_test extends route_testcase {
                 'id' => '2', // Teachers can see the hidden section.
             ],
             'role' => 'editingteacher',
-            'hiddensections' => [2],
+            'sectionsdef' => [
+                ['section' => 2, 'hidden' => true],
+            ],
+        ];
+        yield 'Restricted section visible - Simple case (editingteacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'section', // Editing teachers can see the restricted section.
+                'id' => '2',
+            ],
+            'role' => 'editingteacher',
+            'sectionsdef' => [
+                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[true]}'],
+            ],
+        ];
+        yield 'Restricted section hidden - Simple case when user meets the restriction (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'section', // Student meets the restriction, so the section should be visible.
+                'id' => '2',
+            ],
+            'sectionsdef' => [
+                ['section' => 2, 'available' => $emailavailability . 'student@moodle.invalid"}],"showc":[false]}'],
+            ],
+        ];
+        yield 'Resource: Display auto (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_AUTO]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display embed (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_EMBED]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display frame (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_FRAME]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display new (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_NEW]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display download (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_DOWNLOAD]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display open (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_OPEN]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'Resource: Display popup (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'resource', 'options' => [
+                    'display' => RESOURCELIB_DISPLAY_POPUP,
+                    'popupwidth' => 800,
+                    'popupheight' => 600,
+                ]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display auto (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_AUTO]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display embed (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_EMBED]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display frame (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_FRAME]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display new (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_NEW]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display open (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_OPEN]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'URL: Display popup (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'url', 'options' => [
+                    'display' => RESOURCELIB_DISPLAY_POPUP,
+                    'popupwidth' => 800,
+                    'popupheight' => 600,
+                ]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
         ];
         yield 'With module not supporting FEATURE_CAN_DISPLAY (student)' => [
             'cmsdef' => [
-                ['name' => 'cm1'],
-                ['name' => 'cm2', 'type' => 'qbank'],
-                ['name' => 'cm3'],
+                ['name' => 'cm1', 'type' => 'resource', 'options' => ['display' => RESOURCELIB_DISPLAY_OPEN]],
+                ['name' => 'cm2'],
             ],
-            'current' => 'cm3',
+            'current' => 'cm2',
             'expected' => [
-                'id' => 'cm1', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
             ],
         ];
-        yield 'With module not supporting FEATURE_CAN_DISPLAY (teacher)' => [
+        yield 'Resource: Display popup (student)' => [
             'cmsdef' => [
-                ['name' => 'cm1'],
-                ['name' => 'cm2', 'type' => 'qbank'],
-                ['name' => 'cm3'],
+                ['name' => 'cm1', 'type' => 'resource', 'options' => [
+                    'display' => RESOURCELIB_DISPLAY_POPUP,
+                    'popupwidth' => 800,
+                    'popupheight' => 600,
+                ]],
+                ['name' => 'cm2'],
             ],
-            'current' => 'cm3',
+            'current' => 'cm2',
             'expected' => [
-                'id' => 'cm1', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
             ],
-            'role' => 'teacher',
         ];
-        yield 'With module not supporting FEATURE_CAN_DISPLAY (editingteacher)' => [
+        yield 'URL: Display auto (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'url', 'options' => ['display' => RESOURCELIB_DISPLAY_AUTO]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1',
+                'params' => ['id', 'forceview'],
+            ],
+        ];
+        yield 'First activity of a course (student)' => [
             'cmsdef' => [
                 ['name' => 'cm1'],
-                ['name' => 'cm2', 'type' => 'qbank'],
-                ['name' => 'cm3'],
+                ['name' => 'cm2'],
             ],
-            'current' => 'cm3',
+            'current' => 'cm1',
             'expected' => [
-                'id' => 'cm1', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
+                'type' => 'course',
             ],
-            'role' => 'editingteacher',
+        ];
+        yield 'With first module without url in the first section (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'label'],
+                ['name' => 'cm2', 'options' => ['section' => 0]],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'course',
+            ],
+        ];
+        yield 'With first module without url (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'label'],
+                ['name' => 'cm2', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'section',
+                'id' => '2',
+            ],
+        ];
+        yield 'With module that does not exist (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cmthatdoesnotexist',
+            'expected' => [
+                'type' => 'error',
+                'statuscode' => 404,
+            ],
         ];
     }
 
@@ -987,6 +1441,7 @@ final class course_navigation_test extends route_testcase {
     ): void {
         $this->resetAfterTest();
         set_config('allowstealth', 1);
+        $this->setAdminUser();
 
         $generator = $this->getDataGenerator();
         $course = $generator->create_course(['numsections' => $numsections]);
@@ -1048,7 +1503,8 @@ final class course_navigation_test extends route_testcase {
             $expected['type'] ?? 'cm',
             $expected['id'] ?? '',
             $course->id,
-            $location[0]
+            $location[0],
+            $expected['params'] ?? [],
         );
     }
 
@@ -1059,14 +1515,17 @@ final class course_navigation_test extends route_testcase {
      * @param string $elementid
      * @param int $courseid
      * @param string $location
+     * @param array $expectedparams
      */
     protected function assert_redirected_url(
         string $elementtype,
         string $elementid,
         int $courseid,
-        string $location
+        string $location,
+        array $expectedparams = [],
     ): void {
         $coursemodinfo = modinfo::instance($courseid);
+        $navigationurl = null;
         switch ($elementtype) {
             case 'cm':
                 $cms = $coursemodinfo->get_cms();
@@ -1078,26 +1537,34 @@ final class course_navigation_test extends route_testcase {
                     }
                 }
                 $this->assertNotEmpty($cm, "The course module with name {$elementid} should be found.");
-                $this->assertEquals(
-                    $cm->url,
-                    new url($location)
-                );
+                $navigationurl = $cm->navigationurl;
                 break;
             case 'section':
                 $sectioninfo = $coursemodinfo->get_section_info($elementid);
-                $this->assertEquals(
-                    course_get_url($courseid, $sectioninfo, ['navigation' => true]),
-                    new url($location)
-                );
+                $navigationurl = course_get_url($courseid, $sectioninfo, ['navigation' => true]);
                 break;
             case 'course':
-                $this->assertEquals(
-                    course_get_url($courseid),
-                    new url($location)
-                );
+                $navigationurl = course_get_url($courseid);
                 break;
             default:
                 $this->fail('Unknown expected element type ' . $elementtype);
+        }
+        $this->assertEquals(
+            $navigationurl,
+            new url($location),
+        );
+        // Check for expected parameters in the redirection URL (only when specified).
+        if (!empty($expectedparams)) {
+            $actualparams = array_keys((new url($location))->params());
+            sort($actualparams);
+            sort($expectedparams);
+            $this->assertEquals(
+                $expectedparams,
+                $actualparams,
+                "The URL parameter names do not match.\n" .
+                "Expected: " . implode(', ', $expectedparams) . "\n" .
+                "Actual:   " . implode(', ', $actualparams),
+            );
         }
     }
 
