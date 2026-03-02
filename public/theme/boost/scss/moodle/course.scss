@@ -834,7 +834,6 @@ $divider-hover-color: $primary !default;
                 border-bottom: none;
             }
             .course-section-header {
-                border-bottom: $border-width solid $border-color;
                 padding-bottom: map-get($spacers, 3);
             }
         }

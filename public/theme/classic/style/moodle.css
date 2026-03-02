@@ -31164,7 +31164,6 @@ body:not(.editing) .activity.subsection .section-item .section .activity:last-ch
   border-bottom: none;
 }
 body:not(.editing) .activity.subsection .section-item .course-section-header {
-  border-bottom: 1px solid #dee2e6;
   padding-bottom: 1rem;
 }
 
