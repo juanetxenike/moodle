@@ -66,6 +66,24 @@ class restricted_module {
         $format = course_get_format($course);
         $course->format = $format->get_format();
 
+        // Confirm the module has a view page. Redirect to section page otherwise.
+        if (!$cmurl = $cminfo->get_url()) {
+            $cmurl = $format->get_view_url($sectioninfo->section, ['navigation' => true]);
+            $cmurl->set_anchor('module-' . $cmdata->id);
+            return $this->redirect($response, $cmurl);
+        }
+
+        // Confirm the module is actually restricted. Redirect to module page otherwise.
+        if ($cminfo->get_user_visible()) {
+            return $this->redirect($response, $cmurl);
+        }
+
+        // Confirm the module is not stealth and restrictions are visible.
+        // Redirect to module page to require_login() otherwise.
+        if (!$cminfo->is_visible_on_course_page()) {
+            return $this->redirect($response, $cmurl);
+        }
+
         $url = \core\router\util::get_path_for_callable(
             [self::class, 'restricted_module_page'],
             ['cm' => $cmdata->id],
@@ -89,9 +107,13 @@ class restricted_module {
         );
         $renderer = $format->get_renderer($PAGE);
 
-        $response->getBody()->write($OUTPUT->header());
+        if ($header = $OUTPUT->header()) {
+            $response->getBody()->write($header);
+        }
         $response->getBody()->write($renderer->render($cmoutput));
-        $response->getBody()->write($OUTPUT->footer());
+        if ($footer = $OUTPUT->footer()) {
+            $response->getBody()->write($footer);
+        }
 
         $eventdata = [
             'objectid' => $cmdata->id,

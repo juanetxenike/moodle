@@ -59,6 +59,13 @@ class restricted_section {
 
         require_once($CFG->dirroot . '/course/lib.php');
 
+        // Confirm the section is actually restricted. Redirect to section page otherwise.
+        $modinfo = get_fast_modinfo($section->course);
+        $sectioninfo = $modinfo->get_section_info($section->section, MUST_EXIST);
+        if ($sectioninfo->uservisible) {
+            $url = course_get_url($section->course, $section->section, ['navigation' => true]);
+            return $this->redirect($response, $url);
+        }
         $course = get_course($section->course);
         $context = \context_course::instance($course->id);
         $format = course_get_format($course->id);
@@ -81,9 +88,13 @@ class restricted_section {
         $PAGE->set_heading($sectiontitle);
         $PAGE->set_secondary_navigation(false);
         $renderer = $format->get_renderer($PAGE);
-        $response->getBody()->write($OUTPUT->header());
+        if ($header = $OUTPUT->header()) {
+            $response->getBody()->write($header);
+        }
         $response->getBody()->write($renderer->render($sectionoutput));
-        $response->getBody()->write($OUTPUT->footer());
+        if ($footer = $OUTPUT->footer()) {
+            $response->getBody()->write($footer);
+        }
 
         // Trigger section viewed event.
         course_section_view($context, $section->id, true);
