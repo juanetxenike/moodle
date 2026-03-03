@@ -263,6 +263,7 @@ $string['lastattempt'] = 'Last completed attempt';
 $string['lastattemptlock'] = 'Lock after final attempt';
 $string['lastattemptlock_help'] = 'If enabled, a student is prevented from launching the SCORM player after using up all their allocated attempts.';
 $string['lastattemptlockdesc'] = 'If enabled, a student is prevented from launching the SCORM player after using up all their allocated attempts.';
+$string['leavepage'] = 'Leave page';
 $string['location'] = 'Show the location bar';
 $string['max'] = 'Max score';
 $string['maximumattempts'] = 'Number of attempts';
@@ -299,8 +300,8 @@ There are 3 options:
 $string['navdesc'] = 'This setting specifies whether to show or hide navigation buttons and their position.';
 $string['navpositionleft'] = 'Position of navigation buttons from left in pixels.';
 $string['navpositiontop'] = 'Position of navigation buttons from top in pixels.';
-$string['networkdropped'] = 'The SCORM player has determined that your Internet connection is unreliable or has been interrupted. If you continue in this SCORM activity, your progress may not be saved.<br />
-You should exit the activity now, and return when you have a dependable Internet connection.';
+$string['networkdropped'] = 'It looks like you have an unstable internet connection or your session has timed out. Your progress may not be saved. Please exit and relaunch this activity.';
+$string['networkdroppedmobile'] = 'It looks like you have an unstable internet connection or your session has timed out. Your progress may not be saved. Please exit and relaunch this activity. You may wish to return to this activity in the mobile app for a more stable connection.';
 $string['newattempt'] = 'Start a new attempt';
 $string['next'] = 'Continue';
 $string['noactivity'] = 'Nothing to report';
@@ -439,6 +440,7 @@ $string['typeexternal'] = 'External SCORM manifest';
 $string['typelocal'] = 'Uploaded package';
 $string['typelocalsync'] = 'Downloaded package';
 $string['undercontent'] = 'Under content';
+$string['unstablenetwork'] = 'Unstable network';
 $string['unziperror'] = 'An error occurs during package unzip';
 $string['updatefreq'] = 'Auto-update frequency';
 $string['updatefreq_error'] = 'Auto-update frequency can only be set when the package file is hosted externally';
