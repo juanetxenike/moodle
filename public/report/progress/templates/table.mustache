@@ -23,9 +23,9 @@
     {
     }
 }}
-<h1>{{ title }}</h1>
-<p>{{ totalparticipants }}</p>
-<br /><br />
+{{#title}}<h1>{{ title }}</h1>{{/title}}
+{{#totalparticipants}}<p>{{ totalparticipants }}</p>{{/totalparticipants}}
+<br><br>
 <div id="completion-progress-wrapper" class="no-overflow">
     <table id="completion-progress" class="generaltable flexible boxaligncenter" style="text-align:left">
         <thead>
@@ -56,7 +56,7 @@
                     <th scope="col"></th>
                 {{/fields}}
                 {{#sectionheaders}}
-                    <th scope="col" colspan="{{colcount}}">{{sectionname}}</th>
+                    <th scope="col" {{#colcount}}colspan="{{colcount}}"{{/colcount}}>{{sectionname}}</th>
                 {{/sectionheaders}}
             </tr>
             <tr>
@@ -81,7 +81,7 @@
                         <td>{{.}}</td>
                     {{/extrafields}}
                     {{#activityprogress}}
-                        <td colspan="{{colcount}}">
+                        <td {{#colcount}}colspan="{{colcount}}"{{/colcount}}>
                             <span class="symbol" style="font-family: 'zapfdingbats, symbol'">{{{describe}}}</span>
                             {{date}}
                         </td>
