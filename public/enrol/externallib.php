@@ -217,81 +217,185 @@ class core_enrol_external extends external_api {
      * @since Moodle 2.4
      */
     public static function get_enrolled_users_with_capability_returns() {
-        return  new external_multiple_structure( new external_single_structure (
-                array (
+        return  new external_multiple_structure(
+            new external_single_structure(
+                [
                     'courseid' => new external_value(PARAM_INT, 'Course ID number in the Moodle course table'),
                     'capability' => new external_value(PARAM_CAPABILITY, 'Capability name'),
                     'users' => new external_multiple_structure(
                         new external_single_structure(
-                array(
-                    'id'    => new external_value(PARAM_INT, 'ID of the user'),
-                    'username'    => new external_value(PARAM_RAW, 'Username', VALUE_OPTIONAL),
-                    'firstname'   => new external_value(PARAM_NOTAGS, 'The first name(s) of the user', VALUE_OPTIONAL),
-                    'lastname'    => new external_value(PARAM_NOTAGS, 'The family name of the user', VALUE_OPTIONAL),
-                            'initials'    => new external_value(PARAM_NOTAGS, 'The initials of the user', VALUE_OPTIONAL),
-                    'fullname'    => new external_value(PARAM_NOTAGS, 'The fullname of the user'),
-                    'email'       => new external_value(PARAM_TEXT, 'Email address', VALUE_OPTIONAL),
-                    'address'     => new external_value(PARAM_TEXT, 'Postal address', VALUE_OPTIONAL),
-                    'phone1'      => new external_value(PARAM_NOTAGS, 'Phone 1', VALUE_OPTIONAL),
-                    'phone2'      => new external_value(PARAM_NOTAGS, 'Phone 2', VALUE_OPTIONAL),
-                    'department'  => new external_value(PARAM_TEXT, 'department', VALUE_OPTIONAL),
-                    'institution' => new external_value(PARAM_TEXT, 'institution', VALUE_OPTIONAL),
-                    'interests'   => new external_value(PARAM_TEXT, 'user interests (separated by commas)', VALUE_OPTIONAL),
-                    'firstaccess' => new external_value(PARAM_INT, 'first access to the site (0 if never)', VALUE_OPTIONAL),
-                    'lastaccess'  => new external_value(PARAM_INT, 'last access to the site (0 if never)', VALUE_OPTIONAL),
-                    'lastcourseaccess'  => new external_value(PARAM_INT, 'last access to the course (0 if never)', VALUE_OPTIONAL),
-                    'description' => new external_value(PARAM_RAW, 'User profile description', VALUE_OPTIONAL),
-                    'descriptionformat' => new external_value(PARAM_INT, 'User profile description format', VALUE_OPTIONAL),
-                    'city'        => new external_value(PARAM_NOTAGS, 'Home city of the user', VALUE_OPTIONAL),
-                    'country'     => new external_value(PARAM_ALPHA, 'Country code of the user, such as AU or CZ', VALUE_OPTIONAL),
-                    'profileimageurlsmall' => new external_value(PARAM_URL, 'User image profile URL - small', VALUE_OPTIONAL),
-                    'profileimageurl' => new external_value(PARAM_URL, 'User image profile URL - big', VALUE_OPTIONAL),
-                    'customfields' => new external_multiple_structure(
-                        new external_single_structure(
-                            array(
-                                'type'  => new external_value(PARAM_ALPHANUMEXT, 'The type of the custom field'),
-                                'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
-                                'name' => new external_value(PARAM_RAW, 'The name of the custom field'),
-                                'shortname' => new external_value(PARAM_RAW, 'The shortname of the custom field'),
-                            )
-                        ), 'User custom fields (also known as user profil fields)', VALUE_OPTIONAL),
-                    'groups' => new external_multiple_structure(
-                        new external_single_structure(
-                            array(
-                                'id'  => new external_value(PARAM_INT, 'group id'),
-                                'name' => new external_value(PARAM_RAW, 'group name'),
-                                'description' => new external_value(PARAM_RAW, 'group description'),
-                            )
-                        ), 'user groups', VALUE_OPTIONAL),
-                    'roles' => new external_multiple_structure(
-                        new external_single_structure(
-                            array(
-                                'roleid'       => new external_value(PARAM_INT, 'role id'),
-                                'name'         => new external_value(PARAM_RAW, 'role name'),
-                                'shortname'    => new external_value(PARAM_ALPHANUMEXT, 'role shortname'),
-                                'sortorder'    => new external_value(PARAM_INT, 'role sortorder')
-                            )
-                        ), 'user roles', VALUE_OPTIONAL),
-                    'preferences' => new external_multiple_structure(
-                        new external_single_structure(
-                            array(
-                                'name'  => new external_value(PARAM_RAW, 'The name of the preferences'),
-                                'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
-                            )
-                    ), 'User preferences', VALUE_OPTIONAL),
-                    'enrolledcourses' => new external_multiple_structure(
-                        new external_single_structure(
-                            array(
-                                'id'  => new external_value(PARAM_INT, 'Id of the course'),
-                                'fullname' => new external_value(PARAM_RAW, 'Fullname of the course'),
-                                'shortname' => new external_value(PARAM_RAW, 'Shortname of the course')
-                            )
-                    ), 'Courses where the user is enrolled - limited by which courses the user is able to see', VALUE_OPTIONAL)
-                )
-                        ), 'List of users that are enrolled in the course and have the specified capability'),
-                    )
-                )
-            );
+                            [
+                                'id' => new external_value(
+                                    PARAM_INT,
+                                    'ID of the user'
+                                ),
+                                'username' => new external_value(
+                                    PARAM_RAW,
+                                    'Username',
+                                    VALUE_OPTIONAL
+                                ),
+                                'firstname' => new external_value(
+                                    PARAM_NOTAGS,
+                                    'The first name(s) of the user',
+                                    VALUE_OPTIONAL
+                                ),
+                                'lastname' => new external_value(
+                                    PARAM_NOTAGS,
+                                    'The family name of the user',
+                                    VALUE_OPTIONAL
+                                ),
+                                'initials' => new external_value(
+                                    PARAM_NOTAGS,
+                                    'The initials of the user',
+                                    VALUE_OPTIONAL
+                                ),
+                                'fullname' => new external_value(
+                                    PARAM_NOTAGS,
+                                    'The fullname of the user'
+                                ),
+                                'email' => new external_value(
+                                    PARAM_TEXT,
+                                    'Email address',
+                                    VALUE_OPTIONAL
+                                ),
+                                'address' => new external_value(
+                                    PARAM_TEXT,
+                                    'Postal address',
+                                    VALUE_OPTIONAL
+                                ),
+                                'phone1' => new external_value(
+                                    PARAM_NOTAGS,
+                                    'Phone 1',
+                                    VALUE_OPTIONAL
+                                ),
+                                'phone2' => new external_value(
+                                    PARAM_NOTAGS,
+                                    'Phone 2',
+                                    VALUE_OPTIONAL
+                                ),
+                                'department' => new external_value(
+                                    PARAM_TEXT,
+                                    'department',
+                                    VALUE_OPTIONAL
+                                ),
+                                'institution' => new external_value(
+                                    PARAM_TEXT,
+                                    'institution',
+                                    VALUE_OPTIONAL
+                                ),
+                                'interests' => new external_value(
+                                    PARAM_TEXT,
+                                    'user interests (separated by commas)',
+                                    VALUE_OPTIONAL
+                                ),
+                                'firstaccess' => new external_value(
+                                    PARAM_INT,
+                                    'first access to the site (0 if never)',
+                                    VALUE_OPTIONAL
+                                ),
+                                'lastaccess' => new external_value(
+                                    PARAM_INT,
+                                    'last access to the site (0 if never)',
+                                    VALUE_OPTIONAL
+                                ),
+                                'lastcourseaccess' => new external_value(
+                                    PARAM_INT,
+                                    'last access to the course (0 if never)',
+                                    VALUE_OPTIONAL
+                                ),
+                                'description' => new external_value(
+                                    PARAM_RAW,
+                                    'User profile description',
+                                    VALUE_OPTIONAL
+                                ),
+                                'descriptionformat' => new external_value(
+                                    PARAM_INT,
+                                    'User profile description format',
+                                    VALUE_OPTIONAL
+                                ),
+                                'city' => new external_value(
+                                    PARAM_NOTAGS,
+                                    'Home city of the user',
+                                    VALUE_OPTIONAL
+                                ),
+                                'country' => new external_value(
+                                    PARAM_ALPHA,
+                                    'Country code of the user, such as AU or CZ',
+                                    VALUE_OPTIONAL
+                                ),
+                                'profileimageurlsmall' => new external_value(
+                                    PARAM_URL,
+                                    'User image profile URL - small',
+                                    VALUE_OPTIONAL
+                                ),
+                                'profileimageurl' => new external_value(
+                                    PARAM_URL,
+                                    'User image profile URL - big',
+                                    VALUE_OPTIONAL
+                                ),
+                                'customfields' => new external_multiple_structure(
+                                    new external_single_structure(
+                                        [
+                                            'type' => new external_value(PARAM_ALPHANUMEXT, 'The type of the custom field'),
+                                            'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
+                                            'name' => new external_value(PARAM_RAW, 'The name of the custom field'),
+                                            'shortname' => new external_value(PARAM_RAW, 'The shortname of the custom field'),
+                                        ]
+                                    ),
+                                    'User custom fields (also known as user profil fields)',
+                                    VALUE_OPTIONAL
+                                ),
+                                'groups' => new external_multiple_structure(
+                                    new external_single_structure(
+                                        [
+                                            'id' => new external_value(PARAM_INT, 'group id'),
+                                            'name' => new external_value(PARAM_RAW, 'group name'),
+                                            'description' => new external_value(PARAM_RAW, 'group description'),
+                                        ]
+                                    ),
+                                    'user groups',
+                                    VALUE_OPTIONAL
+                                ),
+                                'roles' => new external_multiple_structure(
+                                    new external_single_structure(
+                                        [
+                                            'roleid' => new external_value(PARAM_INT, 'role id'),
+                                            'name' => new external_value(PARAM_RAW, 'role name'),
+                                            'shortname' => new external_value(PARAM_ALPHANUMEXT, 'role shortname'),
+                                            'sortorder' => new external_value(PARAM_INT, 'role sortorder'),
+                                        ]
+                                    ),
+                                    'user roles',
+                                    VALUE_OPTIONAL
+                                ),
+                                'preferences' => new external_multiple_structure(
+                                    new external_single_structure(
+                                        [
+                                            'name' => new external_value(PARAM_RAW, 'The name of the preferences'),
+                                            'value' => new external_value(PARAM_RAW, 'The value of the custom field'),
+                                        ]
+                                    ),
+                                    'User preferences',
+                                    VALUE_OPTIONAL
+                                ),
+                                'enrolledcourses' => new external_multiple_structure(
+                                    new external_single_structure(
+                                        [
+                                            'id' => new external_value(PARAM_INT, 'Id of the course'),
+                                            'fullname' => new external_value(PARAM_RAW, 'Fullname of the course'),
+                                            'shortname' => new external_value(PARAM_RAW, 'Shortname of the course'),
+                                        ]
+                                    ),
+                                    'Courses where the user is enrolled - limited by which courses the user is able to see',
+                                    VALUE_OPTIONAL
+                                ),
+                            ]
+                        ),
+                        'List of users that are enrolled in the course and have the specified capability'
+                    ),
+                ]
+            )
+        );
     }
 
     /**
