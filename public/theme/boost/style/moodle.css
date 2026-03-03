@@ -31164,7 +31164,7 @@ body:not(.editing) .activity.subsection .section-item .section .activity:last-ch
   border-bottom: none;
 }
 body:not(.editing) .activity.subsection .section-item .course-section-header {
-  padding-bottom: 1rem;
+  padding-bottom: 0.25rem;
 }
 
 /* Spinners */
