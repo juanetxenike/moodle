@@ -592,7 +592,49 @@ final class course_navigation_test extends route_testcase {
                 'id' => 'cm1', // Students cannot see stealth modules in the course page.
             ],
         ];
-        yield 'Restricted module visible (editingteacher)' => [
+        yield 'Hidden first module (teacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['visible' => false]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1', // Students cannot see stealth modules in the course page.
+            ],
+            'role' => 'teacher',
+        ];
+        yield 'Hidden first module (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['visible' => false]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'course', // Students cannot see hidden modules.
+            ],
+        ];
+        yield 'Stealth first module (teacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['visibleoncoursepage' => false]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'id' => 'cm1', // Students cannot see stealth modules in the course page.
+            ],
+            'role' => 'teacher',
+        ];
+        yield 'Stealth first module (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['visibleoncoursepage' => false]],
+                ['name' => 'cm2'],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'course', // Students cannot see stealth modules in the course page.
+            ],
+        ];
+        yield 'First activity of a course (student)' => [
             'cmsdef' => [
                 ['name' => 'cm1'],
                 [
@@ -603,32 +645,17 @@ final class course_navigation_test extends route_testcase {
             ],
             'current' => 'cm3',
             'expected' => [
-                'id' => 'cm2', // Teachers can always see restricted modules.
+                'type' => 'course',
             ],
-            'role' => 'editingteacher',
         ];
-        yield 'Restricted module visible (student)' => [
+        yield 'With previous module being a subsection in the first section (student)' => [
             'cmsdef' => [
-                ['name' => 'cm1'],
-                [
-                    'name' => 'cm2',
-                    'options' => ['availability' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[true]}'],
-                ],
-                ['name' => 'cm3'],
+                ['name' => 'subsection1', 'type' => 'subsection', 'options' => ['section' => 0]],
+                ['name' => 'cm1', 'options' => ['section' => 'subsection1']],
             ],
-            'current' => 'cm3',
+            'current' => 'cm1',
             'expected' => [
-                'id' => 'cm2', // Students can see restricted modules when the restrictions are visible.
-            ],
-        ];
-        yield 'Restricted module hidden (editingteacher)' => [
-            'cmsdef' => [
-                ['name' => 'cm1'],
-                [
-                    'name' => 'cm2',
-                    'options' => ['availability' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[false]}'],
-                ],
-                ['name' => 'cm3'],
+                'type' => 'course',
             ],
             'current' => 'cm3',
             'expected' => [
@@ -709,7 +736,17 @@ final class course_navigation_test extends route_testcase {
                 'id' => 'cm1',
             ],
         ];
-        yield 'Subsection: With previous module being in a hidden subsection (student)' => [
+        yield 'With first module without url in the first section (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'type' => 'label'],
+                ['name' => 'cm2', 'options' => ['section' => 0]],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'course',
+            ],
+        ];
+        yield 'With first module without url (student)' => [
             'cmsdef' => [
                 ['name' => 'cm1', 'options' => ['section' => 2]],
                 ['name' => 'subsection1', 'type' => 'subsection', 'options' => ['section' => 2, 'visibility' => false]],
