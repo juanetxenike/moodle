@@ -454,76 +454,40 @@ final class course_navigation_test extends route_testcase {
                 'id' => '2',
             ],
         ];
-        yield 'Restricted section visible - Simple case (editingteacher)' => [
+        yield 'With module not supporting FEATURE_CAN_DISPLAY (student)' => [
             'cmsdef' => [
-                ['name' => 'cm1', 'options' => ['section' => 1]],
-                ['name' => 'cm2', 'options' => ['section' => 2]],
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'qbank'],
+                ['name' => 'cm3'],
             ],
             'current' => 'cm1',
             'expected' => [
-                'type' => 'section', // Editing teachers can see the restricted section.
-                'id' => '2',
+                'id' => 'cm3', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
+            ],
+        ];
+        yield 'With module not supporting FEATURE_CAN_DISPLAY (teacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'qbank'],
+                ['name' => 'cm3'],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm3', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
+            ],
+            'role' => 'teacher',
+        ];
+        yield 'With module not supporting FEATURE_CAN_DISPLAY (editingteacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'qbank'],
+                ['name' => 'cm3'],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm3', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
             ],
             'role' => 'editingteacher',
-            'sectionsdef' => [
-                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[true]}'],
-            ],
-        ];
-        yield 'Restricted section visible - Simple case (student)' => [
-            'cmsdef' => [
-                ['name' => 'cm1', 'options' => ['section' => 1]],
-                ['name' => 'cm2', 'options' => ['section' => 2]],
-            ],
-            'current' => 'cm1',
-            'expected' => [
-                'type' => 'section',
-                'id' => '2',
-            ],
-            'sectionsdef' => [
-                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[true]}'],
-            ],
-        ];
-        yield 'Restricted section hidden - Simple case (editingteacher)' => [
-            'cmsdef' => [
-                ['name' => 'cm1', 'options' => ['section' => 1]],
-                ['name' => 'cm2', 'options' => ['section' => 2]],
-            ],
-            'current' => 'cm1',
-            'expected' => [
-                'type' => 'section', // Editing teachers can see the restricted section.
-                'id' => '2',
-            ],
-            'role' => 'editingteacher',
-            'sectionsdef' => [
-                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[false]}'],
-            ],
-        ];
-        yield 'Restricted section hidden - Simple case (student)' => [
-            'cmsdef' => [
-                ['name' => 'cm1', 'options' => ['section' => 1]],
-                ['name' => 'cm2', 'options' => ['section' => 2]],
-            ],
-            'current' => 'cm1',
-            'expected' => [
-                'type' => 'course', // Students cannot see the restricted section.
-            ],
-            'sectionsdef' => [
-                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[false]}'],
-            ],
-        ];
-        yield 'Restricted section hidden - Simple case when user meets the restriction (student)' => [
-            'cmsdef' => [
-                ['name' => 'cm1', 'options' => ['section' => 1]],
-                ['name' => 'cm2', 'options' => ['section' => 2]],
-            ],
-            'current' => 'cm1',
-            'expected' => [
-                'type' => 'section', // Student meets the restriction, so the section should be visible.
-                'id' => '2',
-            ],
-            'sectionsdef' => [
-                ['section' => 2, 'available' => $emailavailability . 'student@moodle.invalid"}],"showc":[false]}'],
-            ],
         ];
     }
 
@@ -925,38 +889,42 @@ final class course_navigation_test extends route_testcase {
                 'id' => '2', // Teachers can see the hidden section.
             ],
             'role' => 'editingteacher',
-            'sectionsdef' => [
-                ['section' => 2, 'hidden' => true],
+            'hiddensections' => [2],
+        ];
+        yield 'With module not supporting FEATURE_CAN_DISPLAY (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'qbank'],
+                ['name' => 'cm3'],
+            ],
+            'current' => 'cm3',
+            'expected' => [
+                'id' => 'cm1', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
             ],
         ];
-        yield 'Restricted section visible - Simple case (editingteacher)' => [
+        yield 'With module not supporting FEATURE_CAN_DISPLAY (teacher)' => [
             'cmsdef' => [
-                ['name' => 'cm1', 'options' => ['section' => 1]],
-                ['name' => 'cm2', 'options' => ['section' => 2]],
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'qbank'],
+                ['name' => 'cm3'],
             ],
-            'current' => 'cm2',
+            'current' => 'cm3',
             'expected' => [
-                'type' => 'section', // Editing teachers can see the restricted section.
-                'id' => '2',
+                'id' => 'cm1', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
+            ],
+            'role' => 'teacher',
+        ];
+        yield 'With module not supporting FEATURE_CAN_DISPLAY (editingteacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'type' => 'qbank'],
+                ['name' => 'cm3'],
+            ],
+            'current' => 'cm3',
+            'expected' => [
+                'id' => 'cm1', // The cm2 should be skipped as it does not support FEATURE_CAN_DISPLAY.
             ],
             'role' => 'editingteacher',
-            'sectionsdef' => [
-                ['section' => 2, 'available' => $emailavailability . 'nomail@moodle.invalid"}],"showc":[true]}'],
-            ],
-        ];
-        yield 'Restricted section hidden - Simple case when user meets the restriction (student)' => [
-            'cmsdef' => [
-                ['name' => 'cm1', 'options' => ['section' => 1]],
-                ['name' => 'cm2', 'options' => ['section' => 2]],
-            ],
-            'current' => 'cm2',
-            'expected' => [
-                'type' => 'section', // Student meets the restriction, so the section should be visible.
-                'id' => '2',
-            ],
-            'sectionsdef' => [
-                ['section' => 2, 'available' => $emailavailability . 'student@moodle.invalid"}],"showc":[false]}'],
-            ],
         ];
     }
 
