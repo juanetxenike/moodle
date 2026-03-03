@@ -31160,6 +31160,9 @@ body:not(.editing) .single-section > ul > .course-section .section-item .activit
 body:not(.editing) .activity.subsection .section-item .course-content-item-content {
   border-bottom: 1px solid #dee2e6;
 }
+body:not(.editing) .activity.subsection .section-item:last-child .course-content-item-content {
+  border-bottom: none;
+}
 body:not(.editing) .activity.subsection .section-item .section .activity:last-child {
   border-bottom: none;
 }

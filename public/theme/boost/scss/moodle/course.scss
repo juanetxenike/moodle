@@ -837,6 +837,10 @@ $divider-hover-color: $primary !default;
                 padding-bottom: map-get($spacers, 1);
             }
         }
+        // No bottom line for the last subsection.
+        &:last-child .section-item .course-content-item-content {
+            border-bottom: none;
+        }
     }
 }
 
