@@ -532,6 +532,10 @@ class icon_system_fontawesome extends icon_system_font {
                 'core:e/text_highlight',
                 'core:e/text_highlight_picker',
                 'core:t/locktime',
+                // Deprecated since Moodle 5.2.
+                'core:t/blocks_drawer',
+                'core:t/blocks_drawer_rtl',
+                'core:t/index_drawer',
             ],
         );
     }
