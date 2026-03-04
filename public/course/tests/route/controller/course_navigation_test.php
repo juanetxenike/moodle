@@ -137,6 +137,48 @@ final class course_navigation_test extends route_testcase {
                 'id' => 'cm3', // Students cannot see stealth modules in the course page.
             ],
         ];
+        yield 'Hidden last module (teacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 2]],
+                ['name' => 'cm2', 'options' => ['section' => 2, 'visible' => false]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+            ],
+            'role' => 'teacher',
+        ];
+        yield 'Hidden last module (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 2]],
+                ['name' => 'cm2', 'options' => ['section' => 2, 'visible' => false]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'course', // Students cannot see hidden modules.
+            ],
+        ];
+        yield 'Stealth last module (teacher)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 2]],
+                ['name' => 'cm2', 'options' => ['section' => 2, 'visibleoncoursepage' => false]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'id' => 'cm2',
+            ],
+            'role' => 'teacher',
+        ];
+        yield 'Stealth last module (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 2]],
+                ['name' => 'cm2', 'options' => ['section' => 2, 'visibleoncoursepage' => false]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'course', // Students cannot see stealth modules in the course page.
+            ],
+        ];
         yield 'Restricted module visible (editingteacher)' => [
             'cmsdef' => [
                 ['name' => 'cm1'],
@@ -218,6 +260,16 @@ final class course_navigation_test extends route_testcase {
             'current' => 'cm1',
             'expected' => [
                 'id' => 'cm2',
+            ],
+        ];
+        yield 'Subsection: With next module being a subsection in the last section (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 2]],
+                ['name' => 'subsection1', 'type' => 'subsection', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'course',
             ],
         ];
         yield 'Subsection: With next module being a label and subsections (student)' => [
@@ -714,6 +766,58 @@ final class course_navigation_test extends route_testcase {
             ],
             'role' => 'editingteacher',
         ];
+        yield 'Last activity of a section (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1'],
+                ['name' => 'cm2', 'options' => ['visible' => false]],
+            ],
+            'current' => 'cm2',
+            'expected' => [
+                'type' => 'section',
+                'id' => '1',
+            ],
+        ];
+        yield 'Last activity of a course (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'course',
+            ],
+        ];
+        yield 'With last module without url in the first section (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 0]],
+                ['name' => 'cm2', 'type' => 'label', 'options' => ['section' => 0]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'section',
+                'id' => '1',
+            ],
+        ];
+        yield 'With last module without url in the last section (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 2]],
+                ['name' => 'cm2', 'type' => 'label', 'options' => ['section' => 2]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'course',
+            ],
+        ];
+        yield 'With module that does not exist (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm0'],
+                ['name' => 'cm1'],
+            ],
+            'current' => 'cmthatdoesnotexist',
+            'expected' => [
+                'type' => 'error',
+                'statuscode' => 404,
+            ],
+        ];
     }
 
     /**
@@ -848,7 +952,7 @@ final class course_navigation_test extends route_testcase {
             ],
             'current' => 'cm2',
             'expected' => [
-                'id' => 'cm1', // Students cannot see stealth modules in the course page.
+                'id' => 'cm1',
             ],
             'role' => 'teacher',
         ];
@@ -1385,6 +1489,17 @@ final class course_navigation_test extends route_testcase {
                 'type' => 'course',
             ],
         ];
+        yield 'First activity of a section (student)' => [
+            'cmsdef' => [
+                ['name' => 'cm1', 'options' => ['section' => 1]],
+                ['name' => 'cm2', 'options' => ['section' => 1]],
+            ],
+            'current' => 'cm1',
+            'expected' => [
+                'type' => 'section',
+                'id' => '1',
+            ],
+        ];
         yield 'With first module without url in the first section (student)' => [
             'cmsdef' => [
                 ['name' => 'cm1', 'type' => 'label'],
@@ -1395,9 +1510,9 @@ final class course_navigation_test extends route_testcase {
                 'type' => 'course',
             ],
         ];
-        yield 'With first module without url (student)' => [
+        yield 'With first module without url in the last section (student)' => [
             'cmsdef' => [
-                ['name' => 'cm1', 'type' => 'label'],
+                ['name' => 'cm1', 'type' => 'label', 'options' => ['section' => 2]],
                 ['name' => 'cm2', 'options' => ['section' => 2]],
             ],
             'current' => 'cm2',

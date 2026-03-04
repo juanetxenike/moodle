@@ -80,7 +80,9 @@ class course_navigation {
                 return $this->redirect($response, $nextcm->get_navigation_url());
             }
         }
-        return $this->redirect_to_course($response, $cm->get_course()->id);
+
+        // If there is no next module, redirect to the next section.
+        return $this->redirect_to_next_section($response, $modinfo, $section);
     }
 
     /**
@@ -129,7 +131,9 @@ class course_navigation {
                 return $this->redirect($response, $prevcm->get_navigation_url());
             }
         }
-        return $this->redirect_to_course($response, $cm->get_course()->id);
+
+        // If there is no previous module, redirect to the previous section.
+        return $this->redirect_to_previous_section($response, $modinfo, $section);
     }
 
     /**
