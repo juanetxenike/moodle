@@ -82,7 +82,7 @@
     <location>phpspreadsheet/markbaker/matrix</location>
     <name>PHPMatrix</name>
     <description>PHP Class for handling Matrices.</description>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <license>MIT</license>
     <repository>https://github.com/MarkBaker/PHPMatrix</repository>
   </library>
