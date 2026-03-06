@@ -94,9 +94,11 @@
                 <div class="divider border-start h-75 align-self-center mx-1"></div>
             {{/langmenu}}
             {{{ output.edit_switch }}}
-            {{{ output.navbar_plugin_output }}}
-            {{#usermenu}}
+            {{# output.navbar_plugin_output }}
+            {{{ . }}}
                 <div class="divider border-start h-75 align-self-center mx-1"></div>
+            {{/output.navbar_plugin_output}}
+            {{#usermenu}}
                 <div class="d-flex align-items-stretch usermenu-container" data-region="usermenu">
                     {{> core/user_menu }}
                 </div>
