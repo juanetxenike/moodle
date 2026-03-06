@@ -46,6 +46,7 @@ final class path_coursemodule_test extends route_testcase {
 
         $this->assertEquals($mod->cmid, $newrequest->getAttribute('coursemoduledata')->id);
         $this->assertEquals($modcontext->id, $newrequest->getAttribute('coursemodulecontext')->id);
+        $this->assertEquals($course->id, $newrequest->getAttribute('course'));
     }
 
     /**

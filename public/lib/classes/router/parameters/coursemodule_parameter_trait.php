@@ -108,7 +108,8 @@ trait coursemodule_parameter_trait {
 
         return $request
             ->withAttribute($this->get_value_name('data'), $data)
-            ->withAttribute($this->get_value_name('context'), \core\context\module::instance($data->id));
+            ->withAttribute($this->get_value_name('context'), \core\context\module::instance($data->id))
+            ->withAttribute('course', $data->course);
     }
 
     /**

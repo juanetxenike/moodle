@@ -27,8 +27,8 @@ use stdClass;
  * @package    core
  * @copyright  Amaia Anabitarte <amaia@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers     \core\router\parameters\path_section
  */
+#[CoversClass(\core\router\parameters\path_section::class)]
 final class path_section_test extends route_testcase {
     public function test_section_id(): void {
         $this->resetAfterTest();
@@ -36,17 +36,14 @@ final class path_section_test extends route_testcase {
         $course = $this->getDataGenerator()->create_course();
         $modinfo = get_fast_modinfo($course);
         $section = $modinfo->get_section_info(1);
-        $context = \context_course::instance($course->id);
 
         $param = new path_section();
         $request = new ServerRequest('GET', '/course/sections/' . $section->id . '/restricted');
         $newrequest = $param->add_attributes_for_parameter_value($request, $section->id);
 
         $this->assertInstanceOf(stdClass::class, $newrequest->getAttribute('section'));
-        $this->assertInstanceOf(\core\context\course::class, $newrequest->getAttribute('coursecontext'));
-
         $this->assertEquals($section->id, $newrequest->getAttribute('section')->id);
-        $this->assertEquals($context->id, $newrequest->getAttribute('coursecontext')->id);
+        $this->assertEquals($course->id, $newrequest->getAttribute('course'));
     }
 
     /**
@@ -57,7 +54,6 @@ final class path_section_test extends route_testcase {
 
         $param = new path_section();
 
-        $course = $this->getDataGenerator()->create_course();
         $sectionid = 9999;
 
         $request = new ServerRequest('GET', '/course/sections/' . $sectionid . '/restricted');
