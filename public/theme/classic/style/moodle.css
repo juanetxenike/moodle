@@ -31855,13 +31855,6 @@ body:not(.editing) [id^=module-]:target, body.editing [id^=module-]:target .acti
   height: 70px;
   background: var(--bs-body-bg);
 }
-.modchooser.modal-dialog .modal-footer .moodlenet-logo .icon {
-  height: 2.5rem;
-  width: 6rem;
-  max-height: 2.5rem;
-  max-width: 6rem;
-  margin-bottom: 0.6rem;
-}
 
 /* Main container layout styles. */
 .modchoosercontainer {
