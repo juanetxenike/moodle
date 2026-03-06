@@ -74,7 +74,7 @@
     <location>phpspreadsheet/markbaker/complex</location>
     <name>PHPComplex</name>
     <description>PHP Class Library for working with Complex numbers.</description>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
     <license>MIT</license>
     <repository>https://github.com/MarkBaker/PHPComplex</repository>
   </library>
