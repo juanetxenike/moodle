@@ -31,13 +31,16 @@ admin_externalpage_setup('thirdpartylibs');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('thirdpartylibs', 'core_admin'));
 
-$files = array('core' => "$CFG->libdir/thirdpartylibs.xml");
+$files = [
+    "$CFG->root/lib/thirdpartylibs.xml",
+    "$CFG->libdir/thirdpartylibs.xml",
+];
 
 $plugintypes = core_component::get_plugin_types();
 foreach ($plugintypes as $type => $ignored) {
     $plugins = core_component::get_plugin_list_with_file($type, 'thirdpartylibs.xml', false);
-    foreach ($plugins as $plugin => $path) {
-        $files[$type.'_'.$plugin] = $path;
+    foreach ($plugins as     $path) {
+        $files[] = $path;
     }
 }
 
@@ -50,12 +53,12 @@ $table->id = 'thirdpartylibs';
 $table->attributes['class'] = 'admintable table generaltable table-hover';
 $table->data  = array();
 
-foreach ($files as $component => $xmlpath) {
+foreach ($files as $xmlpath) {
     $xml = simplexml_load_file($xmlpath);
     foreach ($xml as $lib) {
         $base = realpath(dirname($xmlpath));
-        $location = substr($base, strlen($CFG->dirroot)).'/'.$lib->location;
-        if (is_dir($CFG->dirroot.$location)) {
+        $location = substr($base, strlen($CFG->root)).'/'.$lib->location;
+        if (is_dir($CFG->dirroot . $location)) {
             $location .= '/';
         }
         $version = '';
