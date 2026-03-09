@@ -594,5 +594,17 @@ if ($hassiteconfig || has_capability('moodle/site:configview', context_system::i
         $attributes
     ));
 
+    $temp->add(
+        new admin_setting_configtextarea(
+            'tool_mobile/scriptallowlist',
+            new lang_string('scriptallowlist', 'tool_mobile'),
+            new lang_string('scriptallowlist_desc', 'tool_mobile'),
+            '',
+            PARAM_RAW_TRIMMED,
+            '50',
+            '10',
+        )
+    );
+
     $ADMIN->add('mobileapp', $temp);
 }

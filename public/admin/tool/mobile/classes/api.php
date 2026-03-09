@@ -334,6 +334,7 @@ class api {
             }
             $settings->tool_mobile_custommenuitems = $custommenuitems;
             $settings->tool_mobile_customusermenuitems = $customusermenuitems;
+            $settings->tool_mobile_scriptallowlist = get_config('tool_mobile', 'scriptallowlist');
             $settings->tool_mobile_apppolicy = get_config('tool_mobile', 'apppolicy');
             // This setting could be not set in some edge cases such as bad upgrade.
             $mintimereq = get_config('tool_mobile', 'autologinmintimebetweenreq');

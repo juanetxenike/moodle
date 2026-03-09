@@ -216,6 +216,7 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
             [ 'name' => 'tool_mobile_filetypeexclusionlist', 'value' => '' ],
             [ 'name' => 'tool_mobile_custommenuitems', 'value' => '' ],
             [ 'name' => 'tool_mobile_customusermenuitems', 'value' => '' ],
+            [ 'name' => 'tool_mobile_scriptallowlist', 'value' => '' ],
             [ 'name' => 'tool_mobile_apppolicy', 'value' => '' ],
             [ 'name' => 'tool_mobile_autologinmintimebetweenreq', 'value' => 6 * MINSECS ],
             [ 'name' => 'tool_mobile_autologout', 'value' => get_config('tool_mobile', 'autologout') ],

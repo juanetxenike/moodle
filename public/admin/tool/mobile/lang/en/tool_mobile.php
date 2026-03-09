@@ -193,6 +193,10 @@ $string['register'] = 'Register';
 $string['remoteaddons'] = 'Remote add-ons';
 $string['responsivemainmenuitems'] = 'Responsive menu items';
 $string['scanqrcode'] = 'Scan QR code';
+$string['scriptallowlist'] = 'Allowlisted JavaScript domains';
+$string['scriptallowlist_desc'] = 'Enter the domains from which external JavaScript files are allowed to be loaded by the Moodle app when detected in user-generated HTML content.<br>
+Each domain must be written on a separate line. Scripts whose source belongs to one of the listed domains will be allowed to load. Scripts from other domains will continue to be blocked.<br>
+Inline JavaScript is always blocked and cannot be allowed.';
 $string['selfsignedoruntrustedcertificatewarning'] = 'It seems that the HTTPS certificate is self-signed or not trusted. The mobile app will only work with trusted sites. Please use any online SSL checker to diagnose the problem. If it indicates that your certificate is OK, you can ignore this warning.';
 $string['setuplink'] = 'App download page';
 $string['setuplink_desc'] = 'URL of page with options to download the mobile app from the App Store and Google Play. The app download page link is displayed in the page footer and in a user\'s profile. Leave blank to not display a link.';
