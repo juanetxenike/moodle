@@ -184,11 +184,13 @@ const getThirdPartyLibsList = relativeTo => {
     const fs = require('fs');
     const path = require('path');
 
-    return fetchComponentData().pathList
+    const pathList = fetchComponentData().pathList
         .map(componentPath => path.relative(relativeTo, componentPath) + '/thirdpartylibs.xml')
         .map(componentPath => componentPath.replace(/\\/g, '/'))
-        .filter(path => fs.existsSync(path))
-        .sort();
+        .filter(path => fs.existsSync(path));
+
+    pathList.push('lib/thirdpartylibs.xml');
+    return pathList.sort();
 };
 
 /**

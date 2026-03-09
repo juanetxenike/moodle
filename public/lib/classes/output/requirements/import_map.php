@@ -100,8 +100,10 @@ class import_map implements \JsonSerializable {
         $this->add_import('@moodle/lms/', path: 'js/esm/build', loadfromcomponent: true);
         $this->add_import('@moodlehq/design-system', path: 'lib/js/bundles/design-system');
         $this->add_import('react', path: 'lib/js/bundles/react/react');
-        $this->add_import('react/', path: 'lib/js/bundles/react/');
+        $this->add_import('react/', path: 'lib/js/bundles/react');
         $this->add_import('react-dom', path: 'lib/js/bundles/react-dom/react-dom');
+        $this->add_import('react-dom/', path: 'lib/js/bundles/react-dom');
+        $this->add_import('scheduler', path: 'lib/js/bundles/scheduler/scheduler');
     }
 
     /**
