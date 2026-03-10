@@ -31160,14 +31160,17 @@ body:not(.editing) .single-section > ul > .course-section .section-item .activit
 body:not(.editing) .activity.subsection .section-item .course-content-item-content {
   border-bottom: 1px solid #dee2e6;
 }
-body:not(.editing) .activity.subsection .section-item:last-child .course-content-item-content {
-  border-bottom: none;
+body:not(.editing) .activity.subsection .section-item .course-section-header {
+  padding-bottom: 1rem;
+}
+body:not(.editing) .activity.subsection .section-item:has([data-for=sectiontoggler].collapsed):not(:has(.course-content-item-content.collapsing)) .course-section-header {
+  border-bottom: 1px solid #dee2e6;
 }
 body:not(.editing) .activity.subsection .section-item .section .activity:last-child {
   border-bottom: none;
 }
-body:not(.editing) .activity.subsection .section-item .course-section-header {
-  padding-bottom: 0.25rem;
+body:not(.editing) .activity.subsection:last-child .section-item .course-content-item-content, body:not(.editing) .activity.subsection:last-child .section-item:has([data-for=sectiontoggler].collapsed):not(:has(.course-content-item-content.collapsing)) .course-section-header {
+  border-bottom: none;
 }
 
 /* Spinners */

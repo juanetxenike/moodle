@@ -830,16 +830,25 @@ $divider-hover-color: $primary !default;
             .course-content-item-content {
                 border-bottom: $border-width solid $border-color;
             }
+            .course-section-header {
+                padding-bottom: map-get($spacers, 3);
+            }
+            &:has([data-for="sectiontoggler"].collapsed):not(:has(.course-content-item-content.collapsing)) {
+                .course-section-header {
+                    border-bottom: $border-width solid $border-color;
+                }
+            }
             .section .activity:last-child {
                 border-bottom: none;
             }
-            .course-section-header {
-                padding-bottom: map-get($spacers, 1);
-            }
+
         }
         // No bottom line for the last subsection.
-        &:last-child .section-item .course-content-item-content {
-            border-bottom: none;
+        &:last-child .section-item {
+            .course-content-item-content,
+            &:has([data-for="sectiontoggler"].collapsed):not(:has(.course-content-item-content.collapsing)) .course-section-header {
+                border-bottom: none;
+            }
         }
     }
 }
