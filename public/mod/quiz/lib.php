@@ -1116,6 +1116,9 @@ function mod_quiz_inplace_editable(string $itemtype, int $itemid, string $newval
         \core_external\external_api::validate_context($context);
         require_capability('mod/quiz:manage', $context);
 
+        // Validate capability to customise question numbers.
+        require_capability('mod/quiz:customisequestionnumbers', $context);
+
         // Update the value - truncating the size of the DB column.
         $structure = $quizobj->get_structure();
         $structure->update_slot_display_number($itemid, core_text::substr($newvalue, 0, 16));
