@@ -39445,13 +39445,10 @@ body.tox-fullscreen .tox.tox-tinymce-aux {
   z-index: 2;
 }
 .drawer-toggles .drawer-toggler .btn {
-  padding: 8px;
   margin: auto 16px;
   background-color: #dee2e6;
-}
-.drawer-toggles .drawer-toggler .btn .icon {
-  width: auto;
-  height: auto;
+  width: 40px;
+  height: 40px;
 }
 .drawer-toggles .drawer-toggler .btn:focus {
   box-shadow: 0 0 0 0.25rem rgba(15, 108, 191, 0.75);
