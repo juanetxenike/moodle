@@ -43,7 +43,6 @@ $string['addnewgroupoverride'] = 'Add group override';
 $string['addnewpagesafterselected'] = 'Add new pages after selected questions';
 $string['addnewquestionsqbank'] = 'Add questions to the category {$a->catname}: {$a->link}';
 $string['addnewuseroverride'] = 'Add user override';
-$string['addpagebreak'] = 'Add page break';
 $string['addpagebreakafter'] = 'Add page break after question {$a}';
 $string['addpagehere'] = 'Add page here';
 $string['addquestion'] = 'Add question';
@@ -903,7 +902,6 @@ $string['removeallgroupoverrides'] = 'All group overrides';
 $string['removeallquizattempts'] = 'All quiz attempts';
 $string['removealluseroverrides'] = 'All user overrides';
 $string['removeemptypage'] = 'Remove empty page';
-$string['removepagebreak'] = 'Remove page break';
 $string['removepagebreakafter'] = 'Remove page break after question {$a}';
 $string['removeselected'] = 'Remove selected';
 $string['rename'] = 'Rename';
@@ -1170,6 +1168,8 @@ $string['randomcoursewithsubcat'] = 'Any category in this course';
 $string['randomsystemwithsubcat'] = 'Any system-level category';
 
 // Deprecated since Moodle 5.2.
+$string['addpagebreak'] = 'Add page break';
 $string['gobacktoquiz'] = 'Go back';
+$string['removepagebreak'] = 'Remove page break';
 $string['selectquestionbank'] = 'Select question bank';
 $string['cachedef_overrides'] = 'User and group override information';
