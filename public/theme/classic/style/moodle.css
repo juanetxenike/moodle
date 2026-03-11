@@ -31216,6 +31216,10 @@ body:not(.editing) .activity.subsection:last-child .section-item .course-content
   display: none;
 }
 
+[data-for=sectioninfo] {
+  margin: 1rem 0;
+}
+
 /* Drag and drop */
 .course-content .section.dropready.main.drop-down {
   border-bottom: 1px solid #1d2125;

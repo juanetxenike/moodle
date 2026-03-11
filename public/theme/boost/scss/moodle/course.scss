@@ -909,6 +909,10 @@ $divider-hover-color: $primary !default;
     }
 }
 
+[data-for="sectioninfo"] {
+    margin: map-get($spacers, 3) 0;
+}
+
 /* Drag and drop */
 
 // Compensate for the border widths when dropzones are displayed.
