@@ -31132,7 +31132,7 @@ body:not(.editing) .single-section > ul > .course-section .section-item .activit
 }
 .activity.subsection .section .section-item {
   border: none;
-  padding: 0.75rem;
+  padding: 0.75rem 0.75rem 0;
 }
 .activity.subsection .section .icons-collapse-expand:has(+ h4, + .h4) {
   height: 24px;
@@ -31168,6 +31168,13 @@ body:not(.editing) .activity.subsection .section-item:has([data-for=sectiontoggl
 }
 body:not(.editing) .activity.subsection .section-item .section .activity:last-child {
   border-bottom: none;
+}
+body:not(.editing) .activity.subsection .course-content-item-content > [data-for=sectioninfo] {
+  margin: 0.25rem 0;
+}
+body:not(.editing) .activity.subsection .course-content-item-content > [data-for=sectioninfo]:not(.description) {
+  margin: 0;
+  min-height: 0;
 }
 body:not(.editing) .activity.subsection:last-child .section-item .course-content-item-content, body:not(.editing) .activity.subsection:last-child .section-item:has([data-for=sectiontoggler].collapsed):not(:has(.course-content-item-content.collapsing)) .course-section-header {
   border-bottom: none;
