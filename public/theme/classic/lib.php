@@ -109,8 +109,9 @@ function theme_classic_get_extra_scss($theme) {
     // Sets the login background image.
     $loginbackgroundimageurl = $theme->setting_file_url('loginbackgroundimage', 'loginbackgroundimage');
     if (!empty($loginbackgroundimageurl)) {
-        $content .= 'body.pagelayout-login #page { ';
-        $content .= "background-image: url('$loginbackgroundimageurl'); background-size: cover;";
+        $content .= 'body.pagelayout-login #page .login-layout-left { ';
+        $content .= "background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), " .
+            "url('$loginbackgroundimageurl'); background-size: cover;";
         $content .= ' }';
     }
 

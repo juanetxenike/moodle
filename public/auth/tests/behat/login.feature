@@ -35,7 +35,7 @@ Feature: Authentication
     And I set the field "Username" to "testuser"
     And I set the field "Password" to "unexisting"
     And I press "Log in"
-    Then I should see "Invalid login, please try again"
+    Then I should see "Unable to log in"
 
   Scenario: Log out using the Log out link
     Given I log in as "admin"

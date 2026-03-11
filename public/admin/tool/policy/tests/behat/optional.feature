@@ -64,7 +64,7 @@ Feature: Optional policies
       | OwnPageCompulsory1     | full text4 | short text4 | 1              | 0         |
       | OwnPageOptional1       | full text5 | short text5 | 1              | 1         |
     And I am on homepage
-    And I click on "Create new account" "link"
+    And I click on "Sign up" "link"
     # Compulsory policies displayed on own page are shown first and must be agreed.
     And I should see "OwnPageCompulsory1" in the "region-main" "region"
     And I should see "short text4" in the "region-main" "region"

@@ -21,6 +21,6 @@ Feature: Login using email address
     Examples:
       | authloginviaemail | login            | message                         |
       | 0                 | testuser         | You are logged in as            |
-      | 0                 | user@example.com | Invalid login, please try again |
+      | 0                 | user@example.com | Unable to log in |
       | 1                 | testuser         | You are logged in as            |
       | 1                 | user@example.com | You are logged in as            |

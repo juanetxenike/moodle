@@ -10,7 +10,7 @@ Feature: Both first name and last name are always available for every user
       | registerauth    | email |
       | passwordpolicy  | 0     |
     And I am on homepage
-    And I click on "Create new account" "link"
+    And I click on "Sign up" "link"
     When I set the following fields to these values:
       | Username      | mrwhitespace        |
       | Password      | Gue$$m3ifY0uC&n     |

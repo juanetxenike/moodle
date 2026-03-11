@@ -16,7 +16,7 @@ Feature: Test if the login form provides the correct feedback
     And I set the field "Username" to "teacher1"
     And I set the field "Password" to "incorrect"
     When I press "Log in"
-    Then I should see "Invalid login, please try again"
+    Then I should see "Unable to log in"
 
   Scenario: Test login language selector
     Given remote langimport tests are enabled
@@ -60,7 +60,7 @@ Feature: Test if the login form provides the correct feedback
     Given the following config values are set as admin:
       | registerauth | Email-based self-registration |
     And I am on homepage
-    Then I should see "Create new account"
+    Then I should see "Sign up"
 
   Scenario: Set OAuth providers
     Given I log in as "admin"

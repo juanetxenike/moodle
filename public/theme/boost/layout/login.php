@@ -26,11 +26,17 @@ defined('MOODLE_INTERNAL') || die();
 
 $bodyattributes = $OUTPUT->body_attributes();
 
+// Left-panel instructions.
+$leftinstructions = get_string('loginwelcomedescription');
+if (!empty($CFG->auth_instructions)) {
+    $leftinstructions = $CFG->auth_instructions;
+}
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
-    'bodyattributes' => $bodyattributes
+    'bodyattributes' => $bodyattributes,
+    'leftinstructions' => $leftinstructions,
 ];
 
 echo $OUTPUT->render_from_template('theme_boost/login', $templatecontext);
-
