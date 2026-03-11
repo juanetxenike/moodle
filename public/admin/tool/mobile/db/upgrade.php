@@ -102,11 +102,11 @@ function xmldb_tool_mobile_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026031000, 'tool', 'mobile');
     }
 
-    if ($oldversion < 2026012700) {
+    if ($oldversion < 2026031100) {
         // Run the subscription cache refresh task as soon as possible after upgrade by queueing an adhoc task.
         $task = new \tool_mobile\task\refresh_subscription_cache_adhoc();
         \core\task\manager::queue_adhoc_task($task, true);
-        upgrade_plugin_savepoint(true, 2026012700, 'tool', 'mobile');
+        upgrade_plugin_savepoint(true, 2026031100, 'tool', 'mobile');
     }
     return true;
 }
