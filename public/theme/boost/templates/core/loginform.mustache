@@ -117,14 +117,14 @@
                     !}}placeholder="{{#str}}loginenterpassword{{/str}}" {{!
                     !}}autocomplete="current-password">
             </div>
+            <div class="text-end mb-3">
+                <a href="{{forgotpasswordurl}}">{{#str}}loginforgotpassword{{/str}}</a>
+            </div>
             {{#recaptcha}}
                 <div class="login-form-recaptcha mb-3">
                     {{{recaptcha}}}
                 </div>
             {{/recaptcha}}
-            <div class="text-end mb-3">
-                <a href="{{forgotpasswordurl}}">{{#str}}loginforgotpassword{{/str}}</a>
-            </div>
             <div class="login-form-submit mb-3">
                 <button class="btn btn-primary w-100" type="submit" id="loginbtn">{{#str}}login{{/str}}</button>
             </div>
