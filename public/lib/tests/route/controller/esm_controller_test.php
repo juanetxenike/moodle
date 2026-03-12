@@ -53,7 +53,7 @@ final class esm_controller_test extends route_testcase {
                 // phpcs:ignore
                 public function __construct(private readonly string $fixture) {}
                 // phpcs:ignore
-                public function get_path_for_script(string $requestedpath): ?string {
+                public function get_path_for_script(int $revision, string $requestedpath): ?string {
                     return $this->fixture;
                 }
             },

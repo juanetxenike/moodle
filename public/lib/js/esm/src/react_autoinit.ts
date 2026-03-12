@@ -34,18 +34,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import React from "react";
-import {createRoot} from "react-dom/client";
+import {isProfilerEnabled} from "@moodle/lms/core/profiler";
+import {mountReactApp, unmountReactApp} from "@moodle/lms/core/mount";
 
 const SELECTOR = "[data-react-component]";
 const MOUNTED_FLAG = "reactMounted";
 const MOUNTING_FLAG = "reactMounting";
 const reactUnmountMap: WeakMap<Element, () => void> = new WeakMap();
+const profilingEnabled = isProfilerEnabled();
 
 /**
  * DOM ready promise.
  *
- * @return {Promise<void>} Resolves when the DOM is ready.
+ * @returns Resolves when the DOM is ready.
  */
 const domReady = () =>
     document.readyState === "loading"
@@ -59,8 +60,8 @@ const domReady = () =>
 /**
  * Safe JSON parsing from data-react-props.
  *
- * @param {Element} el The element with the data-react-props attribute.
- * @return {Record<string, any>} Parsed props object, or empty object on failure.
+ * @param el The element with the data-react-props attribute.
+ * @returns Parsed props object, or empty object on failure.
  */
 const parseProps = (el: Element): Record<string, any> => {
     const raw = el.getAttribute("data-react-props");
@@ -82,8 +83,8 @@ const parseProps = (el: Element): Record<string, any> => {
  * resolved by the browser through the Moodle import map.
  * The module must have a default-exported React function component.
  *
- * @param {string} componentName The component specifier in `@moodle/lms/<component>/<path>` format.
- * @return {Promise<any>} The imported module, or null if resolution failed.
+ * @param componentName The component specifier in `@moodle/lms/<component>/<path>` format.
+ * @returns The imported module, or null if resolution failed.
  */
 const resolveComponent = async(componentName: string): Promise<any> => {
     if (!componentName) {
@@ -99,6 +100,11 @@ const resolveComponent = async(componentName: string): Promise<any> => {
     }
 
     try {
+        if (profilingEnabled) {
+            window.console.log(
+                `[react_autoinit] Loading: ${componentName}`
+            );
+        }
         const module = await import(componentName);
         return module;
     } catch (e) {
@@ -108,9 +114,24 @@ const resolveComponent = async(componentName: string): Promise<any> => {
 };
 
 /**
+ * Mount a single React component with profiler support.
+ */
+const mountReactComponent = (
+    el: Element,
+    Component: any,
+    props: Record<string, any>
+) => {
+    const componentName = el.getAttribute("data-react-component") || "Unknown";
+    const unmount = mountReactApp(el, Component, props, {
+        id: componentName,
+    });
+    reactUnmountMap.set(el, unmount);
+};
+
+/**
  * Mount an element with the `data-react-component` attribute.
  *
- * @param {Element} el The element to mount.
+ * @param el The element to mount.
  */
 const mountOne = async(el: Element) => {
     if ((el as HTMLElement).dataset[MOUNTED_FLAG]) {
@@ -146,10 +167,15 @@ const mountOne = async(el: Element) => {
     }
 
     try {
-        const root = createRoot(el);
-        root.render(React.createElement(Component, parseProps(el)));
-        reactUnmountMap.set(el, () => root.unmount());
+        const props = parseProps(el);
+        mountReactComponent(el, Component, props);
         (el as HTMLElement).dataset[MOUNTED_FLAG] = "1";
+
+        if (profilingEnabled) {
+            window.console.log(
+                `[react_autoinit] Mounted via default: ${componentName}`
+            );
+        }
     } catch (e) {
         window.console.error("[react_autoinit] Mount failed:", componentName, e);
     } finally {
@@ -160,13 +186,17 @@ const mountOne = async(el: Element) => {
 /**
  * Unmount a single element.
  *
- * @param {Element} el The element to unmount.
+ * @param el The element to unmount.
  */
 const unmountOne = (el: Element) => {
-    const unmount = reactUnmountMap.get(el);
+    const unmount = reactUnmountMap.get(el) ?? (() => unmountReactApp(el));
     if (unmount) {
         try {
             unmount();
+            if (profilingEnabled) {
+                const componentName = el.getAttribute("data-react-component");
+                window.console.log(`[react_autoinit] Unmounted: ${componentName}`);
+            }
         } catch (e) {
             window.console.error("[react_autoinit] Error unmounting:", e);
         }
@@ -179,10 +209,17 @@ const unmountOne = (el: Element) => {
 /**
  * Scan a root element and mount all matching React components within it.
  *
- * @param {Element|Document} root The root to scan.
+ * @param root The root to scan.
  */
 const scanAndMount = (root: Element | Document) => {
-    for (const el of root.querySelectorAll(SELECTOR)) {
+    const elements = root.querySelectorAll(SELECTOR);
+    if (profilingEnabled && elements.length > 0) {
+        window.console.log(
+            `[react_autoinit] Found ${elements.length} component(s) to mount`
+        );
+    }
+
+    for (const el of elements) {
         mountOne(el);
     }
 };
@@ -190,7 +227,7 @@ const scanAndMount = (root: Element | Document) => {
 /**
  * Handle an added DOM node, mounting any React components within it.
  *
- * @param {Node} node The added node to handle.
+ * @param node The added node to handle.
  */
 const handleAddedNode = (node: Node) => {
     if (!(node instanceof Element)) {
@@ -198,6 +235,9 @@ const handleAddedNode = (node: Node) => {
     }
 
     if (node.matches?.(SELECTOR)) {
+        if (profilingEnabled) {
+            window.console.log("[react_autoinit] New component detected");
+        }
         mountOne(node);
     }
     node.querySelectorAll?.(SELECTOR).forEach(mountOne);
@@ -206,7 +246,7 @@ const handleAddedNode = (node: Node) => {
 /**
  * Handle a removed DOM node, unmounting any React components within it.
  *
- * @param {Node} node The removed node to handle.
+ * @param node The removed node to handle.
  */
 const handleRemovedNode = (node: Node) => {
     if (!(node instanceof Element)) {
@@ -223,7 +263,7 @@ const handleRemovedNode = (node: Node) => {
 /**
  * Install a MutationObserver to handle dynamically added and removed nodes.
  *
- * @return {MutationObserver} The installed observer.
+ * @returns The installed observer.
  */
 const installObserver = () => {
     const obs = new MutationObserver((mutations) => {
@@ -248,8 +288,14 @@ let observer: MutationObserver | null = null;
  */
 const init = async() => {
     await domReady();
+    if (profilingEnabled) {
+        window.console.log("[react_autoinit] Initializing (profiling enabled)...");
+    }
     if (!observer) {
         observer = installObserver();
+        if (profilingEnabled) {
+            window.console.log("[react_autoinit] MutationObserver active");
+        }
     }
     scanAndMount(document);
 };

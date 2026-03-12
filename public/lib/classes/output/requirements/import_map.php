@@ -102,8 +102,31 @@ class import_map implements \JsonSerializable {
         $this->add_import('react', path: 'lib/js/bundles/react/react');
         $this->add_import('react/', path: 'lib/js/bundles/react');
         $this->add_import('react-dom', path: 'lib/js/bundles/react-dom/react-dom');
-        $this->add_import('react-dom/', path: 'lib/js/bundles/react-dom');
-        $this->add_import('scheduler', path: 'lib/js/bundles/scheduler/scheduler');
+        $this->add_import('react-dom/', path: 'lib/js/bundles/react-dom', modifier: $this->resolve_react_dev_path(...));
+    }
+
+    /**
+     * Modifier for React imports that resolves to the unminified development build when in developer mode.
+     *
+     * When the JS revision is -1 (developer mode / cachejs disabled), this substitutes the
+     * `.development.js` variant of a React bundle if it exists on disk, giving better stack
+     * traces and warnings during development.
+     *
+     * @param int $revision The JS revision number (-1 signals developer mode).
+     * @param string $requestedpath The bare specifier path that was requested.
+     * @param string $resolvedpath The resolved absolute filesystem path.
+     * @return string The (possibly substituted) absolute filesystem path to serve.
+     */
+    protected function resolve_react_dev_path(int $revision, string $requestedpath, string $resolvedpath): string {
+        if ($revision === -1) {
+            // During development, resolve to the unminified version of React for better debugging.
+            $unminifiedpath = str_replace('.js', '.development.js', $resolvedpath);
+            if (file_exists($unminifiedpath)) {
+                return $unminifiedpath;
+            }
+        }
+
+        return $resolvedpath;
     }
 
     /**
@@ -116,6 +139,9 @@ class import_map implements \JsonSerializable {
      *   to locate the file on disk. Has no effect on the URL in the import map.
      * @param bool $loadfromcomponent When true, the specifier is treated as a `<component>/<module>`
      *   prefix and resolved to the component's `js/esm/build/` directory. Used internally for `@moodle/lms/`.
+     * @param string $suffix File extension suffix appended when resolving filesystem paths (defaults to `.js`).
+     * @param callable|null $modifier Optional callable (int $revision, string $requestedpath, string $resolvedpath): string
+     *   to transform the resolved filesystem path before the file is served. Not used for URL generation.
      */
     public function add_import(
         string $specifier,
@@ -123,12 +149,14 @@ class import_map implements \JsonSerializable {
         ?string $path = null,
         bool $loadfromcomponent = false,
         string $suffix = '.js',
+        ?callable $modifier = null,
     ): void {
         $this->imports[$specifier] = (object) [
             'loader' => $loader,
             'path' => $path,
             'loadfromcomponent' => $loadfromcomponent,
             'suffix' => $suffix,
+            'modifier' => $modifier,
         ];
         $this->importssorted = false;
     }
@@ -142,7 +170,10 @@ class import_map implements \JsonSerializable {
      * @param string $requestedpath The bare specifier path (e.g. `react`, `@moodle/lms/mod_book/viewer`).
      * @return string|null Absolute filesystem path to the JS file, or null if unresolved.
      */
-    public function get_path_for_script(string $requestedpath): ?string {
+    public function get_path_for_script(
+        int $revision,
+        string $requestedpath,
+    ): ?string {
         global $CFG;
 
         // Sort longest-key-first once so a more-specific prefix always wins over a shorter one.
@@ -164,7 +195,11 @@ class import_map implements \JsonSerializable {
 
             if ($importdata->loadfromcomponent) {
                 $subpath = substr($requestedpath, strlen($specifier));
-                return $this->resolve_module_identifier($importdata, $subpath);
+                $resolved = $this->resolve_module_identifier($importdata, $subpath);
+                if ($importdata->modifier !== null) {
+                    $resolved = ($importdata->modifier)($revision, $requestedpath, $resolved);
+                }
+                return $resolved;
             }
 
             $pathremainder = substr($requestedpath, strlen($specifier));
@@ -173,7 +208,15 @@ class import_map implements \JsonSerializable {
             if (in_array('..', explode('/', $pathremainder), true)) {
                 return null;
             }
-            return implode(DIRECTORY_SEPARATOR, array_filter([$CFG->root, $importdata->path, $pathremainder])) . $importdata->suffix;
+            $resolved = implode(DIRECTORY_SEPARATOR, array_filter([
+                $CFG->root,
+                $importdata->path,
+                $pathremainder,
+            ])) . $importdata->suffix;
+            if ($importdata->modifier !== null) {
+                $resolved = ($importdata->modifier)($revision, $requestedpath, $resolved);
+            }
+            return $resolved;
         }
 
         return null;

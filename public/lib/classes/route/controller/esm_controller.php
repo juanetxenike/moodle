@@ -72,7 +72,7 @@ class esm_controller {
         }
 
         $importmap = \core\di::get(\core\output\requirements\import_map::class);
-        $fullpath = $importmap->get_path_for_script($scriptpath);
+        $fullpath = $importmap->get_path_for_script($revision, $scriptpath);
         if ($fullpath !== null && file_exists($fullpath)) {
             return $this->serve_script($request, $response, $revision, $fullpath, basename($fullpath));
         }
