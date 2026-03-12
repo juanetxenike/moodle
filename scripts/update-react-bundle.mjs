@@ -48,9 +48,10 @@ const bundles = [
   { packageName: "react", version: REACT_VERSION, fileName: "jsx-dev-runtime", dev: true },
   { packageName: "react-dom", version: REACT_DOM_VERSION, fileName: "react-dom" },
   { packageName: "react-dom", version: REACT_DOM_VERSION, fileName: "client" },
+  { packageName: "react-dom", version: REACT_DOM_VERSION, fileName: "profiling", outputFileName: "client.development" },
 ].map((bundle) => ({
   ...bundle,
-  url: `https://esm.sh/${bundle.packageName}@${bundle.version}/${TARGET}/${bundle.fileName}${bundle.dev ? '.development' : ''}.bundle.mjs`
+  url: `https://esm.sh/stable/${bundle.packageName}@${bundle.version}/${TARGET}/${bundle.fileName}${bundle.dev ? '.development' : ''}.bundle.mjs`
 }));
 
 /**
@@ -68,7 +69,7 @@ async function init() {
 
   for (const bundle of bundles) {
     const fileDir = path.join(outputdir, bundle.packageName);
-    const filePath = path.join(fileDir, `${bundle.fileName}.js`);
+    const filePath = path.join(fileDir, `${bundle.outputFileName ?? bundle.fileName}.js`);
     console.log(chalk.green(`→ ${bundle.packageName}/${bundle.fileName} ✓`));
     await download(bundle.url, filePath, (filePath) => {
       let content = fs.readFileSync(filePath, 'utf-8');
@@ -78,13 +79,13 @@ async function init() {
           // For the main react and react-dom bundles, we need to replace the import paths to remove the version number.
           // This is because the imports in the esm.sh bundles include the version number, but we want to use the unversioned paths in our lib folder.
           // For example, the import path in the bundle might be "/react@19.2.4/es2022/react.js", but we want it to be "react".
-          content = content.replace(
-            `/${bundle.packageName}@${bundle.version}/${TARGET}/${bundle.fileName}.mjs`,
+          content = content.replaceAll(
+            `/stable/${bundle.packageName}@${bundle.version}/${TARGET}/${bundle.fileName}.mjs`,
             `${bundle.packageName}`
           );
         } else {
-          content = content.replace(
-            `/${bundle.packageName}@${bundle.version}/${TARGET}/${bundle.fileName}.mjs`,
+          content = content.replaceAll(
+            `/stable/${bundle.packageName}@${bundle.version}/${TARGET}/${bundle.fileName}.mjs`,
             `${bundle.packageName}/${bundle.fileName}`
           );
         }
