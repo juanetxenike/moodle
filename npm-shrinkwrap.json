@@ -2029,9 +2029,9 @@
       }
     },
     "node_modules/@moodlehq/design-system": {
-      "version": "2.1.0",
-      "resolved": "https://registry.npmjs.org/@moodlehq/design-system/-/design-system-2.1.0.tgz",
-      "integrity": "sha512-rBdj7czZineA19nSmN5ogBW8tAoIR9w81I0TezVfIvpGVaKaZoUTwC7CZuNgPNYdVHBoqhUknB5h2KYvvr7GRQ==",
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/@moodlehq/design-system/-/design-system-2.1.1.tgz",
+      "integrity": "sha512-mJv3iiVwrXO1mXf2bZGqz0PGJb/q6x3B/OBDqGljxDbHEce4LpKjipGqPurnrvP1WouBHEdDmLI94ETujqUoag==",
       "license": "GPL-3.0-only",
       "dependencies": {
         "bootstrap": "^5.3.8"
