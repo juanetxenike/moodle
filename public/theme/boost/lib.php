@@ -57,12 +57,16 @@ function theme_boost_get_extra_scss($theme) {
 
     // Sets the login background image.
     $loginbackgroundimageurl = $theme->setting_file_url('loginbackgroundimage', 'loginbackgroundimage');
-    if (!empty($loginbackgroundimageurl)) {
-        $content .= 'body.pagelayout-login #page .login-layout-left { ';
-        $content .= "background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), " .
-            "url('$loginbackgroundimageurl'); background-size: cover;";
-        $content .= ' }';
+    if (empty($loginbackgroundimageurl)) {
+        // Use the default login background image.
+        $loginbackgroundimageurl = $theme->image_url(
+            'login_background',
+            'theme',
+        );
     }
+    $content .= 'body.pagelayout-login #page .login-layout-left { ';
+    $content .= "background-image: url('$loginbackgroundimageurl'); background-size: cover;";
+    $content .= ' }';
 
     // Always return the background image with the scss when we have it.
     return !empty($theme->settings->scss) ? "{$theme->settings->scss}  \n  {$content}" : $content;
