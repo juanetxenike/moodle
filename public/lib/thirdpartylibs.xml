@@ -715,7 +715,7 @@ All rights reserved.</copyright>
   </library>
   <library>
     <location>guzzlehttp/guzzle</location>
-    <name>GuzzleHttp/Guzzle</name>
+    <name>guzzlehttp/guzzle</name>
     <description>Guzzle is a PHP HTTP client library</description>
     <version>7.10.0</version>
     <license>MIT</license>
@@ -723,7 +723,7 @@ All rights reserved.</copyright>
   </library>
   <library>
     <location>guzzlehttp/promises</location>
-    <name>GuzzleHttp/Promises</name>
+    <name>guzzlehttp/promises</name>
     <description>Guzzle promises library</description>
     <version>2.3.0</version>
     <license>MIT</license>
@@ -739,7 +739,7 @@ All rights reserved.</copyright>
   </library>
   <library>
     <location>guzzlehttp/psr7</location>
-    <name>GuzzleHttp/PSR7</name>
+    <name>guzzlehttp/psr7</name>
     <description>PSR-7 message implementation that also provides common utility methods</description>
     <version>2.8.0</version>
     <license>MIT</license>
@@ -755,7 +755,7 @@ All rights reserved.</copyright>
   </library>
   <library>
     <location>guzzlehttp/kevinrob/guzzlecache</location>
-    <name>Guzzle cache middleware</name>
+    <name>kevinrob/guzzle-cache-middleware</name>
     <description>A HTTP Cache for Guzzle as a simple Middleware to be added in the HandlerStack.</description>
     <version>7.0.0</version>
     <license>MIT</license>
