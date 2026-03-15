@@ -65,7 +65,7 @@
         "guzzlehttp/psr7": "2.7.0",
         "symfony/deprecation-contracts": "3.6.0",
         "kevinrob/guzzle-cache-middleware": "6.0.0",
-        "laravel/serializable-closure": "2.0.3",
+        "laravel/serializable-closure": "2.0.10",
         "php-di/php-di": "7.0.8",
         "php-di/invoker": "2.3.6",
         "monolog/monolog": "3.9.0",
