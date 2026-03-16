@@ -833,10 +833,12 @@ $divider-hover-color: $primary !default;
             .course-section-header {
                 padding-bottom: map-get($spacers, 3);
             }
-            &:has([data-for="sectiontoggler"].collapsed):not(:has(.course-content-item-content.collapsing)) {
-                .course-section-header {
-                    border-bottom: $border-width solid $border-color;
-                }
+            .course-section-header:has(.icons-collapse-expand.collapsed) {
+                border-bottom: $border-width solid $border-color;
+            }
+
+            &:has(.course-content-item-content.collapsing) .course-section-header {
+                border-bottom: none;
             }
             .section .activity:last-child {
                 border-bottom: none;
@@ -852,8 +854,11 @@ $divider-hover-color: $primary !default;
         }
         // No bottom line for the last subsection.
         &:last-child .section-item {
-            .course-content-item-content,
-            &:has([data-for="sectiontoggler"].collapsed):not(:has(.course-content-item-content.collapsing)) .course-section-header {
+            .course-content-item-content {
+                border-bottom: none;
+            }
+
+            .course-section-header:has(.icons-collapse-expand.collapsed) {
                 border-bottom: none;
             }
         }
