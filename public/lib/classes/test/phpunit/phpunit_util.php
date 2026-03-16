@@ -217,6 +217,7 @@ class phpunit_util extends \core\test\testing_util {
         \core_filetypes::reset_caches();
         \core_search\manager::clear_static();
         \core\user::reset_caches();
+        \core\task\manager::reset_state();
         \core\output\icon_system::reset_caches();
         if (class_exists(\core_media_manager::class, false)) {
             \core_media_manager::reset_caches();
