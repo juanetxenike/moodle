@@ -1054,7 +1054,9 @@ class core_enrol_external extends external_api {
                 $userpicture->size = 1;
                 $userdetails['profileimageurl'] = $userpicture->get_url($PAGE)->out(false);
             }
-            $userdetails['initials'] = core_user::get_initials($user);
+            if ($includeinitials) {
+                $userdetails['initials'] = core_user::get_initials($user);
+            }
             $users[] = $userdetails;
         }
         $enrolledusers->close();
