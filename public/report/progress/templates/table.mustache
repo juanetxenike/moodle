@@ -84,11 +84,12 @@
                         <td {{#colcount}}colspan="{{colcount}}"{{/colcount}} class="completion-progresscell">
                             {{#canoverride}}
                             <a href="{{overrideurl}}" class="changecompl" data-changecompl="{{changecompl}}" data-activityname="{{activityname}}" data-userfullname="{{userfullname}}" data-completiontracking="{{completiontracking}}" role="button">
-                            {{/canoverride}}
-                                <span class="symbol" style="font-family: 'zapfdingbats, symbol'">{{{describe}}}</span>
-                                {{date}}
-                            {{#canoverride}}
+                                {{{describe}}}
                             </a>
+                            {{/canoverride}}
+                            {{^canoverride}}
+                            <span class="symbol" style="font-family: 'zapfdingbats, symbol'">{{{describe}}}</span>
+                            {{date}}
                             {{/canoverride}}
                         </td>
                     {{/activityprogress}}
