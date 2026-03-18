@@ -26,6 +26,7 @@ use core\exception\moodle_exception;
 use core\report_helper;
 use report_completion\course_report_pdf;
 use report_progress\local\helper;
+use report_progress\engine;
 use report_progress\output\report;
 use core\url as moodle_url;
 use core\context\course;
@@ -238,9 +239,10 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('pluginname', 'report_progress'));
 echo $OUTPUT->header();
+$PAGE->requires->js_call_amd('report_progress/completion_override', 'init', [fullname($USER)]);
 $pluginname = get_string('pluginname', 'report_progress');
 report_helper::print_report_selector($pluginname);
-
+$progressengine = new engine();
 echo $progressengine->pagingbar($course, $sort, $sifirst, $silast, $total, $url, $page);
 if (!$total) {
     echo $OUTPUT->notification(get_string('nothingtodisplay'), 'info', false);

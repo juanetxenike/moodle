@@ -141,12 +141,15 @@ class engine {
         object $context,
         array $extrafields,
         array $activities,
-        string $format
+        string $format,
+        bool $canoverride = false,
+        string $pageurl = ''
     ) {
         global $OUTPUT;
-        return array_map(function ($user) use ($context, $extrafields, $activities, $format, $OUTPUT) {
+        return array_map(function ($user) use ($context, $extrafields, $activities, $format, $OUTPUT, $canoverride, $pageurl) {
+            $userfullname = fullname($user, has_capability('moodle/site:viewfullnames', $context));
             // For each user: Progress for each activity.
-            $activityprogress = array_map(function ($activity) use ($user, $format, $OUTPUT) {
+            $activityprogress = array_map(function ($activity) use ($user, $format, $OUTPUT, $canoverride, $pageurl, $userfullname) {
 
                 // Get progress information and state.
                 $thisprogress = $user->progress[$activity->id] ?? new \stdClass();
@@ -182,11 +185,39 @@ class engine {
                 $describe = $format == "pdf" ?
                     ($completiontype == 'n' ? '6' : '3')
                     : $OUTPUT->pix_icon('i/' . $completionicon, $fulldescribe);
-                return [
+
+                $overridedata = [];
+                if (
+                    $canoverride &&
+                    $state != COMPLETION_COMPLETE_PASS &&
+                    $state != COMPLETION_COMPLETE_FAIL
+                ) {
+                    $newstate = ($state == COMPLETION_COMPLETE) ? COMPLETION_INCOMPLETE : COMPLETION_COMPLETE;
+                    $activityname = format_string($activity->name, true, ['context' => $activity->context]);
+                    $overridedata = [
+                        'canoverride' => true,
+                        'changecompl' => $user->id . '-' . $activity->id . '-' . $newstate,
+                        'activityname' => $activityname,
+                        'userfullname' => $userfullname,
+                        'completiontracking' => $completiontrackingstring,
+                        'overrideurl' => $pageurl,
+                    ];
+                }
+
+                return array_merge([
                     'date' => $date,
                     'describe' => $describe,
-                ];
+                ], $overridedata);
             }, $activities);
+
+            // When override is possible, each cell needs unique data, so skip grouping.
+            if ($canoverride) {
+                return [
+                    'fullname' => $userfullname,
+                    'extrafields' => array_map(fn($field) => s($user->{$field}), $extrafields),
+                    'activityprogress' => array_values($activityprogress),
+                ];
+            }
 
             // Initialize accumulator for array_reduce.
             $initial = [
@@ -227,7 +258,7 @@ class engine {
             }
 
             return [
-                'fullname' => fullname($user, has_capability('moodle/site:viewfullnames', $context)),
+                'fullname' => $userfullname,
                 'extrafields' => array_map(fn($field) => s($user->{$field}), $extrafields),
                 'activityprogress' => array_values($result['grouped_array']),
             ];

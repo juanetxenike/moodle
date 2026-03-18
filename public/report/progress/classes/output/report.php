@@ -147,6 +147,11 @@ class report implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output): array {
         $progressengine = new ProgressEngine();
+        $canoverride = has_capability('moodle/course:overridecompletion', $this->context);
+        $pageurl = (new moodle_url('/report/progress/index.php', [
+            'course' => $this->courseid,
+            'sesskey' => sesskey(),
+        ]))->out(false);
         return [
             'title' => get_string('pluginname', 'report_progress'),
             'totalparticipants' => get_string('allparticipants') . ": {$this->totalheader}",
@@ -158,7 +163,9 @@ class report implements renderable, templatable {
                     $this->context,
                     $this->extrafields,
                     $this->activities,
-                    $this->format
+                    $this->format,
+                    $canoverride,
+                    $pageurl
                 )
             ),
             'sectionheaders' => (array) $progressengine->section_headers($this->activities),
