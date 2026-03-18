@@ -23,3 +23,15 @@ Feature: Marketplace activity chooser footer
     And I open the activity chooser
     Then "Browse more activities on" "text" should exist in the "Add an activity or resource" "dialogue"
     And "Marketplace" "link" should exist in the "Add an activity or resource" "dialogue"
+
+  Scenario: Back button works from activity help when the Marketplace footer is active
+    Given I log in as "teacher1"
+    When I am on "Course 1" course homepage with editing mode on
+    And I open the activity chooser
+    And I click on "Information about the Assignment activity" "button" in the "Add an activity or resource" "dialogue"
+    Then "help" "core_course > Activity chooser screen" should be visible
+    When I click on "Back" "button" in the "Add an activity or resource" "dialogue"
+    Then "modules" "core_course > Activity chooser screen" should be visible
+    And "help" "core_course > Activity chooser screen" should not be visible
+    And "Marketplace" "link" should exist in the "Add an activity or resource" "dialogue"
+    And "Back" "button" should not be visible
