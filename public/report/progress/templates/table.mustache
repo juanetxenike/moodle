@@ -23,15 +23,12 @@
     {
     }
 }}
-{{#title}}<h1>{{ title }}</h1>{{/title}}
-{{#totalparticipants}}<p>{{ totalparticipants }}</p>{{/totalparticipants}}
-<br><br>
 <div id="completion-progress-wrapper" class="no-overflow">
-    <table id="completion-progress" class="generaltable flexible boxaligncenter" style="text-align:left">
+    <table id="completion-progress" class="table generaltable flexible table-striped table-hover boxaligncenter" style="text-align:left">
         <thead>
             <tr style="vertical-align:top">
-                <th scope="col">
-                    {{#str}}completion,completion{{/str}}
+                <th scope="col" class="completion-sortchoice">
+                    {{{firstnamelastnameheading}}}
                 </th>
                 {{#fields}}
                     <th scope="col" class="completion-identifyfield">
@@ -48,27 +45,22 @@
                     </th>
                 {{/formattedactivities}}
             </tr>
-            <tr style="background-color: #dedede;">
-                <th scope="col">
-                    <strong>{{#str}}sections{{/str}}</strong>
-                </th>
-                {{#fields}}
-                    <th scope="col"></th>
-                {{/fields}}
-                {{#sectionheaders}}
-                    <th scope="col" {{#colcount}}colspan="{{colcount}}"{{/colcount}}>{{sectionname}}</th>
-                {{/sectionheaders}}
-            </tr>
             <tr>
-                <th scope="col"><strong>{{#str}}activities{{/str}}</strong></th>
+                <th scope="col"></th>
                 {{#fields}}
                     <th scope="col"></th>
                 {{/fields}}
                 {{#activityicons}}
-                    <th scope="col" class="colheader criterianame criteriaicon">
-                        {{#isHtml}}<a href="{{url}}" title="{{title}}">{{/isHtml}}
-                            {{{icon}}}
-                        {{#isHtml}}</a>{{/isHtml}}
+                    <th scope="col" class="colheader criterianame criteriaicon" style="text-align: center;">
+                        {{#isHtml}}
+                            <a href="{{url}}" title="{{title}}">
+                            <div class="modicon">
+                        {{/isHtml}}
+                                {{{icon}}}
+                        {{#isHtml}}
+                            </div>
+                            </a>
+                        {{/isHtml}}
                     </th>
                 {{/activityicons}}
             </tr>

@@ -125,7 +125,6 @@ $total = $completion->get_num_tracked_users(implode(' AND ', $where), $wherepara
 
 // Total user count.
 $grandtotal = $completion->get_num_tracked_users('', [], $group);
-$totalheader = ($total == $grandtotal) ? $total : "{$total}/{$grandtotal}";
 
 // Get user data.
 // Obtains progress information across a course for all users on that course.
@@ -218,8 +217,9 @@ $renderable = new report(
     $activityinclude,
     $activityorder,
     $activitysection,
-    $totalheader,
-    $progress
+    $progress,
+    $firstnamesort,
+    $url
 );
 $renderer = $PAGE->get_renderer('report_progress');
 $html = $renderer->render_activity_completion_report($renderable);
@@ -242,7 +242,45 @@ echo $OUTPUT->header();
 $PAGE->requires->js_call_amd('report_progress/completion_override', 'init', [fullname($USER)]);
 $pluginname = get_string('pluginname', 'report_progress');
 report_helper::print_report_selector($pluginname);
+
+$output = $PAGE->get_renderer('report_progress');
+// Handle groups (if enabled).
+echo $output->render_groups_select($url, $course, $group);
+
+// Display include activity filter.
+echo $output->render_include_activity_select($url, $activitytypes, $activityinclude);
+
+// Display activity order options.
+echo $output->render_activity_order_select($url, $activityorder);
+
+// Display section selector.
+$modinfo = get_fast_modinfo($course);
+$sections = [];
+$cmids = array_keys($completion->get_activities());
+foreach ($modinfo->get_sections() as $sectionnum => $section) {
+    if (empty(array_intersect($section, $cmids))) {
+        continue;
+    }
+    $sectionname = get_section_name($course, $sectionnum);
+    if (empty($sectionname)) {
+        $sectionname = get_string('section') . ' ' . $sectionnum;
+    }
+    $sections[$sectionnum] = $sectionname;
+}
+echo $output->render_activity_section_select($url, $activitysection, $sections);
+if (count($activities)==0) {
+    echo $OUTPUT->container(get_string('err_noactivities', 'completion'), 'errorbox errorboxcontent');
+    echo $OUTPUT->footer();
+    exit;
+}
+// If no users in this course what-so-ever
+if (!$grandtotal) {
+    echo $OUTPUT->container(get_string('err_nousers', 'completion'), 'errorbox errorboxcontent');
+    echo $OUTPUT->footer();
+    exit;
+}
 $progressengine = new engine();
+print '<br class="clearer"/>';
 echo $progressengine->pagingbar($course, $sort, $sifirst, $silast, $total, $url, $page);
 if (!$total) {
     echo $OUTPUT->notification(get_string('nothingtodisplay'), 'info', false);

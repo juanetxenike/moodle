@@ -60,10 +60,6 @@ class report implements renderable, templatable {
      */
     private $activitysection;
     /**
-     * @var mixed $totalheader Holds the total header information for the report.
-     */
-    private $totalheader;
-    /**
      * @var array $fieldsarray An array to store the fields for the report.
      */
     private $fieldsarray;
@@ -97,17 +93,26 @@ class report implements renderable, templatable {
      */
     private $extrafields;
     /**
+     * @var array $extrafields An array to store additional fields for the report.
+     */
+    private $firstnamesort;
+    /**
+     * @var moodle_url $url The URL associated with the report.
+     */
+    private $url;
+    /**
      * Constructor for the report class.
      *
      * Initializes the report object with necessary dependencies and configurations.
      *
-     * @param int $courseid Description of the first dependency.
-     * @param string $format Description of the second dependency.
-     * @param string $activityinclude Description of the third dependency.
-     * @param string $activityorder
-     * @param int $activitysection
-     * @param int $totalheader
-     * @param array $progress
+     * @param int $courseid ID of the course this activity progress report is associated with.
+     * @param string $format The format in which the report will be generated.
+     * @param string $activityinclude This variable is used to include specific activities in the report.
+     * @param string $activityorder An array that holds the order of activities for the progress report.
+     * @param int $activitysection Stores the activity section information.
+     * @param array $progress The progress data for the report.
+     * @param bool $firstnamesort Indicates whether the report should be sorted by first name.
+     * @param moodle_url $url The URL associated with the report.
      */
     public function __construct(
         int $courseid,
@@ -115,13 +120,13 @@ class report implements renderable, templatable {
         string $activityinclude,
         string $activityorder,
         int $activitysection,
-        int $totalheader,
-        array $progress
+        array $progress,
+        bool $firstnamesort,
+        \moodle_url $url
     ) {
         global $DB;
         $this->courseid = $courseid;
         $this->course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
-        $this->totalheader = $totalheader;
         $this->format = $format;
         $this->fieldsarray = (new CompletionEngine($this->courseid, $this->format))->fieldsarray();
         $this->completion = new completion_info($this->course);
@@ -138,6 +143,8 @@ class report implements renderable, templatable {
         $this->progress = $progress;
         $this->context = course::instance($courseid);
         $this->extrafields = (new ProgressEngine())->extrafields($this->context);
+        $this->firstnamesort = $firstnamesort;
+        $this->url = $url;
     }
     /**
      * Display the completion report
@@ -152,9 +159,20 @@ class report implements renderable, templatable {
             'course' => $this->courseid,
             'sesskey' => sesskey(),
         ]))->out(false);
+        $sorturl = fullclone($this->url);
+        $firstnamelastnameheading = '';
+        if ($this->firstnamesort) {
+            $sorturl->param('sort', 'lastname');
+            $sortlink = \html_writer::link($sorturl, get_string('lastname'));
+            $firstnamelastnameheading = get_string('firstname') . " / $sortlink";
+        } else {
+            $sorturl->param('sort', 'firstname');
+            $sortlink = \html_writer::link($sorturl, get_string('firstname'));
+            $firstnamelastnameheading = "$sortlink / " . get_string('lastname');
+        }
         return [
             'title' => get_string('pluginname', 'report_progress'),
-            'totalparticipants' => get_string('allparticipants') . ": {$this->totalheader}",
+            'firstnamelastnameheading' => $firstnamelastnameheading,
             'fields' => $this->fieldsarray,
             'formattedactivities' => array_values($this->formattedactivities),
             'users' => array_values(

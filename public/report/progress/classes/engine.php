@@ -294,7 +294,7 @@ class engine {
         // The URL used in the initials bar should reset the 'start' parameter.
         $initialsbarurl = fullclone($url);
         $initialsbarurl->remove_params('page');
-        $pagingbar .= $OUTPUT->initials_bar($sifirst, 'firstinitial', get_string('firstname'), $prefixfirst, $initialsbarurl);
+        $pagingbar .= $OUTPUT->initials_bar($sifirst, 'firstinitial mt-2', get_string('firstname'), $prefixfirst, $initialsbarurl);
         $pagingbar .= $OUTPUT->initials_bar($silast, 'lastinitial', get_string('lastname'), $prefixlast, $initialsbarurl);
         $pagingbar .= $OUTPUT->paging_bar($total, $page, helper::COMPLETION_REPORT_PAGE, $url);
         return $pagingbar;
