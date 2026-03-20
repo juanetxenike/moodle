@@ -286,7 +286,7 @@ echo $OUTPUT->header();
 
 $pluginname = get_string('pluginname', 'report_completion');
 report_helper::print_report_selector($pluginname);
-echo $OUTPUT->heading(get_string('allparticipants').": {$totalheader}", 3);
+echo $OUTPUT->heading(get_string('allparticipants') . ": {$totalheader}", 3);
 echo $engine->pagingbar($course, $sort, $sifirst, $silast, $total, $url, $start);
 if (!$total) {
     echo $OUTPUT->notification(get_string('nothingtodisplay'), 'info', false);
