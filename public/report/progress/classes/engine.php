@@ -134,6 +134,8 @@ class engine {
      * @param array $extrafields Additional fields that may be required for progress calculation.
      * @param array $activities An array of activities to consider in the progress calculation.
      * @param string $format The format in which the progress is being calculated.
+     * @param bool $canoverride Indicates whether the progress can be overridden.
+     * @param string $pageurl The URL of the page for which the progress is being calculated.
      * @return array The calculated progress for each user.
      */
     public function users_progress(
@@ -149,8 +151,8 @@ class engine {
         return array_map(function ($user) use ($context, $extrafields, $activities, $format, $OUTPUT, $canoverride, $pageurl) {
             $userfullname = fullname($user, has_capability('moodle/site:viewfullnames', $context));
             // For each user: Progress for each activity.
-            $activityprogress = array_map(function ($activity) use ($user, $format, $OUTPUT, $canoverride, $pageurl, $userfullname) {
-
+            $activityprogress = array_map(function ($activity)
+                        use ($user, $format, $OUTPUT, $canoverride, $pageurl, $userfullname) {
                 // Get progress information and state.
                 $thisprogress = $user->progress[$activity->id] ?? new \stdClass();
                 $thisprogress->completionstate = $thisprogress->completionstate ?? COMPLETION_INCOMPLETE;
