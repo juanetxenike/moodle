@@ -151,8 +151,14 @@ class engine {
         return array_map(function ($user) use ($context, $extrafields, $activities, $format, $OUTPUT, $canoverride, $pageurl) {
             $userfullname = fullname($user, has_capability('moodle/site:viewfullnames', $context));
             // For each user: Progress for each activity.
-            $activityprogress = array_map(function ($activity)
-                        use ($user, $format, $OUTPUT, $canoverride, $pageurl, $userfullname) {
+            $activityprogress = array_map(function ($activity) use (
+                $user,
+                $format,
+                $OUTPUT,
+                $canoverride,
+                $pageurl,
+                $userfullname
+                ) {
                 // Get progress information and state.
                 $thisprogress = $user->progress[$activity->id] ?? new \stdClass();
                 $thisprogress->completionstate = $thisprogress->completionstate ?? COMPLETION_INCOMPLETE;
