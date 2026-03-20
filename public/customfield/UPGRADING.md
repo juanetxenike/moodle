@@ -1,6 +1,6 @@
 # core_customfield (subsystem) Upgrade notes
 
-## 5.2dev
+## 5.2dev+
 
 ### Added
 
@@ -13,9 +13,9 @@
 
 ### Changed
 
-- The WebService `core_customfield_reload_template` now returns a new parameter "canconvert".
+- The base `\core_customfield\handler` class now implements static caching/reset itself, so all implementations of the same from extending handler classes should be removed
 
-  For more information see [MDL-87690](https://tracker.moodle.org/browse/MDL-87690)
+  For more information see [MDL-88176](https://tracker.moodle.org/browse/MDL-88176)
 
 ### Deprecated
 

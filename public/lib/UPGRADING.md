@@ -1,21 +1,30 @@
 # core (subsystem) Upgrade notes
 
-## 5.2dev
+## 5.2dev+
 
 ### Added
 
 - Appending an exclamation mark to template names ignores theme overrides
 
   For more information see [MDL-77894](https://tracker.moodle.org/browse/MDL-77894)
+- Several core web services now include a new initials field in user data structures. This change is backward-compatible and only adds an optional field; no existing fields or field semantics have been changed. Client applications should ensure they can handle the additional initials field in web service responses, but clients that ignore unknown fields can continue working without changes. The affected web services are: - core_enrol_get_enrolled_users - core_enrol_get_enrolled_users_with_capability - core_enrol_get_potential_users - core_enrol_search_users - core_user_get_users_by_field - core_user_get_users - core_user_get_course_user_profiles - core_grades_get_enrolled_users_for_selector - core_grades_get_gradable_users - gradereport_grader_get_users_in_report - core_message_get_contact_requests - core_message_get_conversation_members - core_message_message_search_users - core_message_get_user_contacts - core_message_get_member_info - core_message_get_conversation_messages - mod_assign_list_participants - mod_assign_get_participant - mod_forum_get_forum_discussions
+
+  For more information see [MDL-84960](https://tracker.moodle.org/browse/MDL-84960)
 - Redis connection timeout settings for cachestores and sessions have been split into connection timeout and read timeout to allow for finer control. These settings now also accept floats.
 
   For more information see [MDL-85336](https://tracker.moodle.org/browse/MDL-85336)
+- "grunt watch" now accepts a force flag. Run "grunt watch -f" or "grunt watch --force" to prevent grunt from cancelling builds when errors occur. This is especially useful during development, because js build files will be built even if, for example, jslint errors are still present in the files.
+
+  For more information see [MDL-86839](https://tracker.moodle.org/browse/MDL-86839)
 - The namespace for the `\core_shutdown_manager` has been moved to `\core\shutdown_manager`. The legacy namespace will continue to work for the moment.
 
   For more information see [MDL-87046](https://tracker.moodle.org/browse/MDL-87046)
 - Added clean_string() that prevents double escaping in Mustache templates
 
   For more information see [MDL-87066](https://tracker.moodle.org/browse/MDL-87066)
+- When creating upgrade notes, the issue number will be inferred from the current Git branch name by default
+
+  For more information see [MDL-87100](https://tracker.moodle.org/browse/MDL-87100)
 - The `upgrade_ensure_not_running()` function has been deprecated and replaced
   with:
 
@@ -146,6 +155,12 @@
 
   For more information see [MDL-87716](https://tracker.moodle.org/browse/MDL-87716)
 
+### Deprecated
+
+- The get_moodlenet_info() method has been deprecated and will be removed in a future release (See MDL-87934 for the final deprecation). There is no replacement for this method.
+
+  For more information see [MDL-87350](https://tracker.moodle.org/browse/MDL-87350)
+
 ### Removed
 
 - Removed `qtype_random` from core. `core\component::is_valid_plugin_name` has an additional check to ensure no-one can create a new plugin called qtype_random, as this would conflict with the support for restoring old backups.
@@ -174,6 +189,12 @@
 - Removed $CFG->wwwrootendsinpublic flag to force users to configure their server accordingly.
 
   For more information see [MDL-87072](https://tracker.moodle.org/browse/MDL-87072)
+- MoodleNet outbound sharing functionality has been removed. All classes, functions, web services, and entry files related to outbound sharing have been removed. The OAuth2 service type 'moodlenet' has also been removed. There is no replacement for this functionality as MoodleNet outbound sharing was an experimental feature that is being discontinued.
+
+  For more information see [MDL-87350](https://tracker.moodle.org/browse/MDL-87350)
+- The MoodleNet integration plugin (tool_moodlenet) has been removed from Moodle core. The public MoodleNet service (moodle.net) is being retired in April 2026. Sites using self-hosted MoodleNet instances can install the plugin from the Moodle HQ GitHub repository.
+
+  For more information see [MDL-87351](https://tracker.moodle.org/browse/MDL-87351)
 - The following functions have been removed from `public/lib/deprecatedlib.php` as part of the depreciation process: - `print_course_request_buttons()` - `cron_run()` - `cron_run_scheduled_tasks()` - `cron_run_adhoc_tasks()` - `cron_run_inner_scheduled_task()` - `cron_run_inner_adhoc_task()` - `cron_set_process_title()` - `cron_trace_time_and_memory()` - `cron_prepare_core_renderer()` - `cron_setup_user()` - `badges_get_oauth2_service_options()` - `theme_is_device_locked()` - `theme_get_locked_theme_for_device()` - `random_bytes_emulate()` - `plagiarism_get_file_results()` - `plagiarism_update_status()` - `calendar_top_controls()` - `calendar_get_link_previous()` - `calendar_get_link_next()`
 
   For more information see [MDL-87423](https://tracker.moodle.org/browse/MDL-87423)

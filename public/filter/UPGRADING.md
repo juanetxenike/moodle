@@ -1,6 +1,6 @@
 # core_filters (subsystem / plugintype) Upgrade notes
 
-## 5.2dev
+## 5.2dev+
 
 ### Removed
 

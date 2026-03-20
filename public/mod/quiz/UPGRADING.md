@@ -1,6 +1,23 @@
 # mod_quiz Upgrade notes
 
-## 5.2dev
+## 5.2dev+
+
+### Added
+
+- `mod_quiz_cm_info_dynamic()` now uses the new `quiz_overrides` cache via `override_manager`, performing a single cache fetch per quiz/user. This significantly reduces cache calls on course pages with many quizzes and groups.
+  The new `mod_quiz:quiz_overrides` cache is keyed by `quizid_userid` using datasource `\mod_quiz\cache\quiz_overrides_cache`. This cache returns all applicable overrides for a user in a quiz (the user override, if any, plus all group overrides for groups they belong to in the quiz's course).
+  New class `\mod_quiz\local\quiz_overrides_cache_manager` to interact with the cache:
+    - `get_overrides(int $quizid, int $userid): array`
+    - `purge_for_user(int $quizid, int $userid): void`
+    - `purge_for_users(int $quizid, array $userids): void`
+    - `purge_for_group(int $quizid, int $groupid): void`
+    - `purge_for_group_members(int $groupid, array $userids): void`
+
+  Hook callbacks in `db/hooks.php` to keep the cache in sync with group membership changes:
+    - `\core_group\hook\after_group_membership_added`
+    - `\core_group\hook\after_group_membership_removed`
+
+  For more information see [MDL-86493](https://tracker.moodle.org/browse/MDL-86493)
 
 ### Changed
 
@@ -10,6 +27,12 @@
 
 ### Deprecated
 
+- The language strings `addpagebreak` and `removepagebreak` have been deprecated and should no longer be used. These have been replaced by the `addpagebreakafter` and `removepagebreakafter` language strings.
+
+  For more information see [MDL-81608](https://tracker.moodle.org/browse/MDL-81608)
+- The quiz overrides cache implementation has been replaced with a faster alternative with a different API. This should be a transparent change but any direct references will still need to be updated.
+
+  For more information see [MDL-86493](https://tracker.moodle.org/browse/MDL-86493)
 - The `mod_quiz_output_fragment_switch_question_bank()` Fragment API callback is deprecated in favour of `core_question\route\api\bank::banks()`, available via the route `/api/rest/v2/core/question/banks?courseid=X`.
 
   For more information see [MDL-87264](https://tracker.moodle.org/browse/MDL-87264)

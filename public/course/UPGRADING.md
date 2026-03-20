@@ -1,6 +1,6 @@
 # core_course (subsystem) Upgrade notes
 
-## 5.2dev
+## 5.2dev+
 
 ### Added
 
@@ -19,6 +19,9 @@
 - New 'restricted' parameter has been added to course_section_view() function to define whether the section was restricted for the user or not.
 
   For more information see [MDL-87679](https://tracker.moodle.org/browse/MDL-87679)
+- The `cm_info` class now includes `get_navigation_url()`, `set_navigation_url(?url $url)`, and `reset_navigation_url()` methods, allowing activities to explicitly define, override, or suppress their navigation URL. This customisation can be managed within the `cm_info_dynamic callback`. By setting the navigation URL to null, a module can be effectively excluded from the linear navigation flow, such as the automatic "Previous" and "Next" routing URLs. In cases where no override is specified, `get_navigation_url()` will return the default `$cm->url` by fallback.
+
+  For more information see [MDL-87984](https://tracker.moodle.org/browse/MDL-87984)
 
 ### Changed
 

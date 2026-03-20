@@ -1,6 +1,18 @@
 # core_user (subsystem) Upgrade notes
 
-## 5.2dev
+## 5.2dev+
+
+### Added
+
+- Added new optional parameter `userid` to the `user_remove_user_device` function.
+
+  For more information see [MDL-87795](https://tracker.moodle.org/browse/MDL-87795)
+
+### Deprecated
+
+- The MoodleNet profile field has been migrated from a core user table field to a custom profile field. Any existing moodlenetprofile data will be automatically migrated to a custom profile field during upgrade. The core moodlenetprofile column will be removed from the user table.
+
+  For more information see [MDL-87361](https://tracker.moodle.org/browse/MDL-87361)
 
 ### Removed
 

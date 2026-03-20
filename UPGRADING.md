@@ -6,7 +6,7 @@ More detailed information on key changes can be found in the [Developer update n
 
 The format of this change log follows the advice given at [Keep a CHANGELOG](https://keepachangelog.com).
 
-## 5.2dev
+## 5.2dev+
 
 ### core
 
@@ -15,15 +15,24 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Appending an exclamation mark to template names ignores theme overrides
 
   For more information see [MDL-77894](https://tracker.moodle.org/browse/MDL-77894)
+- Several core web services now include a new initials field in user data structures. This change is backward-compatible and only adds an optional field; no existing fields or field semantics have been changed. Client applications should ensure they can handle the additional initials field in web service responses, but clients that ignore unknown fields can continue working without changes. The affected web services are: - core_enrol_get_enrolled_users - core_enrol_get_enrolled_users_with_capability - core_enrol_get_potential_users - core_enrol_search_users - core_user_get_users_by_field - core_user_get_users - core_user_get_course_user_profiles - core_grades_get_enrolled_users_for_selector - core_grades_get_gradable_users - gradereport_grader_get_users_in_report - core_message_get_contact_requests - core_message_get_conversation_members - core_message_message_search_users - core_message_get_user_contacts - core_message_get_member_info - core_message_get_conversation_messages - mod_assign_list_participants - mod_assign_get_participant - mod_forum_get_forum_discussions
+
+  For more information see [MDL-84960](https://tracker.moodle.org/browse/MDL-84960)
 - Redis connection timeout settings for cachestores and sessions have been split into connection timeout and read timeout to allow for finer control. These settings now also accept floats.
 
   For more information see [MDL-85336](https://tracker.moodle.org/browse/MDL-85336)
+- "grunt watch" now accepts a force flag. Run "grunt watch -f" or "grunt watch --force" to prevent grunt from cancelling builds when errors occur. This is especially useful during development, because js build files will be built even if, for example, jslint errors are still present in the files.
+
+  For more information see [MDL-86839](https://tracker.moodle.org/browse/MDL-86839)
 - The namespace for the `\core_shutdown_manager` has been moved to `\core\shutdown_manager`. The legacy namespace will continue to work for the moment.
 
   For more information see [MDL-87046](https://tracker.moodle.org/browse/MDL-87046)
 - Added clean_string() that prevents double escaping in Mustache templates
 
   For more information see [MDL-87066](https://tracker.moodle.org/browse/MDL-87066)
+- When creating upgrade notes, the issue number will be inferred from the current Git branch name by default
+
+  For more information see [MDL-87100](https://tracker.moodle.org/browse/MDL-87100)
 - The `upgrade_ensure_not_running()` function has been deprecated and replaced
   with:
 
@@ -154,6 +163,12 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
   For more information see [MDL-87716](https://tracker.moodle.org/browse/MDL-87716)
 
+#### Deprecated
+
+- The get_moodlenet_info() method has been deprecated and will be removed in a future release (See MDL-87934 for the final deprecation). There is no replacement for this method.
+
+  For more information see [MDL-87350](https://tracker.moodle.org/browse/MDL-87350)
+
 #### Removed
 
 - Removed `qtype_random` from core. `core\component::is_valid_plugin_name` has an additional check to ensure no-one can create a new plugin called qtype_random, as this would conflict with the support for restoring old backups.
@@ -182,6 +197,12 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - Removed $CFG->wwwrootendsinpublic flag to force users to configure their server accordingly.
 
   For more information see [MDL-87072](https://tracker.moodle.org/browse/MDL-87072)
+- MoodleNet outbound sharing functionality has been removed. All classes, functions, web services, and entry files related to outbound sharing have been removed. The OAuth2 service type 'moodlenet' has also been removed. There is no replacement for this functionality as MoodleNet outbound sharing was an experimental feature that is being discontinued.
+
+  For more information see [MDL-87350](https://tracker.moodle.org/browse/MDL-87350)
+- The MoodleNet integration plugin (tool_moodlenet) has been removed from Moodle core. The public MoodleNet service (moodle.net) is being retired in April 2026. Sites using self-hosted MoodleNet instances can install the plugin from the Moodle HQ GitHub repository.
+
+  For more information see [MDL-87351](https://tracker.moodle.org/browse/MDL-87351)
 - The following functions have been removed from `public/lib/deprecatedlib.php` as part of the depreciation process: - `print_course_request_buttons()` - `cron_run()` - `cron_run_scheduled_tasks()` - `cron_run_adhoc_tasks()` - `cron_run_inner_scheduled_task()` - `cron_run_inner_adhoc_task()` - `cron_set_process_title()` - `cron_trace_time_and_memory()` - `cron_prepare_core_renderer()` - `cron_setup_user()` - `badges_get_oauth2_service_options()` - `theme_is_device_locked()` - `theme_get_locked_theme_for_device()` - `random_bytes_emulate()` - `plagiarism_get_file_results()` - `plagiarism_update_status()` - `calendar_top_controls()` - `calendar_get_link_previous()` - `calendar_get_link_next()`
 
   For more information see [MDL-87423](https://tracker.moodle.org/browse/MDL-87423)
@@ -286,6 +307,13 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ### core_badges
 
+#### Added
+
+- The following classes and functions are now also available in the following new locations. They will continue to work in their old locations:
+  | Old classname/function | New classname/function | | --- | --- | | `\badge_award_selector_base` | `\core_badges\award_selector_base` | | `\badge_potential_users_selector` | `\core_badges\potential_award_selector` | | `\badge_existing_users_selector` | `\core_badges\existing_award_selector` | | `process_manual_award()` | `\core_badges\award_manager::process_manual_award()` | | `process_manual_revoke()` | `\core_badges\award_manager::process_manual_revoke()` |
+
+  For more information see [MDL-83902](https://tracker.moodle.org/browse/MDL-83902)
+
 #### Changed
 
 - The create_issued_badge generator now returns the issued badge object.
@@ -351,6 +379,9 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - New 'restricted' parameter has been added to course_section_view() function to define whether the section was restricted for the user or not.
 
   For more information see [MDL-87679](https://tracker.moodle.org/browse/MDL-87679)
+- The `cm_info` class now includes `get_navigation_url()`, `set_navigation_url(?url $url)`, and `reset_navigation_url()` methods, allowing activities to explicitly define, override, or suppress their navigation URL. This customisation can be managed within the `cm_info_dynamic callback`. By setting the navigation URL to null, a module can be effectively excluded from the linear navigation flow, such as the automatic "Previous" and "Next" routing URLs. In cases where no override is specified, `get_navigation_url()` will return the default `$cm->url` by fallback.
+
+  For more information see [MDL-87984](https://tracker.moodle.org/browse/MDL-87984)
 
 #### Changed
 
@@ -469,9 +500,9 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 #### Changed
 
-- The WebService `core_customfield_reload_template` now returns a new parameter "canconvert".
+- The base `\core_customfield\handler` class now implements static caching/reset itself, so all implementations of the same from extending handler classes should be removed
 
-  For more information see [MDL-87690](https://tracker.moodle.org/browse/MDL-87690)
+  For more information see [MDL-88176](https://tracker.moodle.org/browse/MDL-88176)
 
 #### Deprecated
 
@@ -480,6 +511,12 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
   For more information see [MDL-87690](https://tracker.moodle.org/browse/MDL-87690)
 
 ### core_enrol
+
+#### Changed
+
+- The external function core_enrol::get_enrolled_users() now behaves consistently with the web version; returning the basic user information even if the current user does not have permission to view the full details.
+
+  For more information see [MDL-87242](https://tracker.moodle.org/browse/MDL-87242)
 
 #### Removed
 
@@ -709,6 +746,18 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ### core_user
 
+#### Added
+
+- Added new optional parameter `userid` to the `user_remove_user_device` function.
+
+  For more information see [MDL-87795](https://tracker.moodle.org/browse/MDL-87795)
+
+#### Deprecated
+
+- The MoodleNet profile field has been migrated from a core user table field to a custom profile field. Any existing moodlenetprofile data will be automatically migrated to a custom profile field during upgrade. The core moodlenetprofile column will be removed from the user table.
+
+  For more information see [MDL-87361](https://tracker.moodle.org/browse/MDL-87361)
+
 #### Removed
 
 - - The `\profile_field_base::profile_field_base()` has been removed from `public/user/profile/lib.php`. - The `\core_user_renderer::unified_filter()` has been removed from `public/user/renderer.php`.
@@ -789,6 +838,14 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - - The `public/grade/report/singleview/classes/local/screen/select.php` file has been removed.
 
   For more information see [MDL-87425](https://tracker.moodle.org/browse/MDL-87425)
+
+### message_airnotifier
+
+#### Added
+
+- A new scheduled task, `message_airnotifier\task\cleanup_task`, has been added. This task removes orphaned records in the `message_airnotifier_devices` table.
+
+  For more information see [MDL-87795](https://tracker.moodle.org/browse/MDL-87795)
 
 ### mod_assign
 
@@ -919,6 +976,23 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 ### mod_quiz
 
+#### Added
+
+- `mod_quiz_cm_info_dynamic()` now uses the new `quiz_overrides` cache via `override_manager`, performing a single cache fetch per quiz/user. This significantly reduces cache calls on course pages with many quizzes and groups.
+  The new `mod_quiz:quiz_overrides` cache is keyed by `quizid_userid` using datasource `\mod_quiz\cache\quiz_overrides_cache`. This cache returns all applicable overrides for a user in a quiz (the user override, if any, plus all group overrides for groups they belong to in the quiz's course).
+  New class `\mod_quiz\local\quiz_overrides_cache_manager` to interact with the cache:
+    - `get_overrides(int $quizid, int $userid): array`
+    - `purge_for_user(int $quizid, int $userid): void`
+    - `purge_for_users(int $quizid, array $userids): void`
+    - `purge_for_group(int $quizid, int $groupid): void`
+    - `purge_for_group_members(int $groupid, array $userids): void`
+
+  Hook callbacks in `db/hooks.php` to keep the cache in sync with group membership changes:
+    - `\core_group\hook\after_group_membership_added`
+    - `\core_group\hook\after_group_membership_removed`
+
+  For more information see [MDL-86493](https://tracker.moodle.org/browse/MDL-86493)
+
 #### Changed
 
 - The WebServices mod_quiz_get_user_best_grade and mod_quiz_get_user_quiz_attempts have been updated to return overall feedback even when quiz marks are hidden in the review options. This change aligns the WebService behaviour with Moodle LMS display logic.
@@ -927,6 +1001,12 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
 #### Deprecated
 
+- The language strings `addpagebreak` and `removepagebreak` have been deprecated and should no longer be used. These have been replaced by the `addpagebreakafter` and `removepagebreakafter` language strings.
+
+  For more information see [MDL-81608](https://tracker.moodle.org/browse/MDL-81608)
+- The quiz overrides cache implementation has been replaced with a faster alternative with a different API. This should be a transparent change but any direct references will still need to be updated.
+
+  For more information see [MDL-86493](https://tracker.moodle.org/browse/MDL-86493)
 - The `mod_quiz_output_fragment_switch_question_bank()` Fragment API callback is deprecated in favour of `core_question\route\api\bank::banks()`, available via the route `/api/rest/v2/core/question/banks?courseid=X`.
 
   For more information see [MDL-87264](https://tracker.moodle.org/browse/MDL-87264)
@@ -1097,6 +1177,15 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 
   For more information see [MDL-87929](https://tracker.moodle.org/browse/MDL-87929)
 
+#### Deprecated
+
+- These icons are no longer in use and have been deprecated:
+    - core:t/blocks_drawer
+    - core:t/blocks_drawer_rtl
+    - core:t/index_drawer
+
+  For more information see [MDL-88085](https://tracker.moodle.org/browse/MDL-88085)
+
 ### theme_boost
 
 #### Removed
@@ -1104,6 +1193,14 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - - The `public/theme/boost/templates/flat_navigation.mustache` file has been removed. - The `public/theme/boost/templates/nav-drawer.mustache` file has been removed.
 
   For more information see [MDL-87425](https://tracker.moodle.org/browse/MDL-87425)
+
+### tool_behat
+
+#### Added
+
+- The `behat_session_trait::ensure_element_[does_not_]exists(...)` methods now accept optional `$container` parameter to define the parent node to look within
+
+  For more information see [MDL-75067](https://tracker.moodle.org/browse/MDL-75067)
 
 ### tool_mfa
 
@@ -1120,6 +1217,9 @@ The format of this change log follows the advice given at [Keep a CHANGELOG](htt
 - The WS tool_mobile_get_public_config now returns whether MFA and reCAPTCHA are enabled for login/recover password.
 
   For more information see [MDL-87003](https://tracker.moodle.org/browse/MDL-87003)
+- Improve the mobile app subscription page UI and add a subscription cache refresh task and an application-level cache. The cache name used for mobile subscription information has changed, the get_subscription() helper now accepts additional parameters and the undocumented config.php setting $CFG->disablemobileappsubscription has been removed.
+
+  For more information see [MDL-87494](https://tracker.moodle.org/browse/MDL-87494)
 
 ### tool_xmldb
 
