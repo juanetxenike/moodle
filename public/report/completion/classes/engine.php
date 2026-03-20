@@ -22,6 +22,9 @@ use core\context\course;
 use core_user\fields;
 use moodle_url;
 
+require_once(__DIR__.'/../../../../config.php');
+require_once("{$CFG->libdir}/completionlib.php");
+
 /**
  * Class engine
  *
@@ -346,8 +349,26 @@ class engine {
             $coursea->user     = fullname($user);
             $coursea->activity = strip_tags(get_string('coursecomplete', 'completion'));
             $coursefulldescribe = get_string('progress-title', 'completion', $coursea);
-
+            if (completion_can_view_data($user->id, $course)) {
+                $userurl = new moodle_url(
+                    '/blocks/completionstatus/details.php',
+                    [
+                        'course' => $course->id,
+                        'user' => $user->id
+                    ]
+                );
+            } else {
+                $userurl = new moodle_url(
+                    '/user/view.php',
+                    [
+                        'id' => $user->id,
+                        'course' => $course->id
+                    ]
+                );
+            }
             return [
+                'userurl' => $userurl->out(),
+                'fullname' => fullname($user, has_capability('moodle/site:viewfullnames', $this->context)),
                 'fullname' => fullname($user, has_capability('moodle/site:viewfullnames', $this->context)),
                 'fields' => array_map(fn($field) => s($user->{$field}), $this->get_extrafields($course)),
                 'criteria' => array_map(function ($criterion) use ($user, $completion, $modinfo, $dateformat, $OUTPUT, $format) {

@@ -85,6 +85,14 @@ class report implements renderable, templatable {
      */
     private $course;
     /**
+     * @var bool $firstnamesort Indicates whether the report is sorted by first name.
+     */
+    private $firstnamesort;
+    /**
+     * @var moodle_url $url The URL for the report page.
+     */
+    private $url;
+    /**
      * Constructor
      *
      * @param int $courseid
@@ -93,14 +101,18 @@ class report implements renderable, templatable {
      * @param int $leftcols
      * @param mixed $completion
      * @param mixed $progress
+     * @param bool $firstnamesort
+     * @param moodle_url $url
      */
     public function __construct(
         int $courseid,
         string $format,
         int $totalparticipants,
         int $leftcols,
-        $completion,
-        $progress
+        mixed $completion,
+        mixed $progress,
+        bool $firstnamesort,
+        moodle_url $url
     ) {
         $this->courseid = $courseid;
         $this->format = $format;
@@ -124,6 +136,8 @@ class report implements renderable, templatable {
             )
         );
         $this->modinfo = get_fast_modinfo($this->course);
+        $this->firstnamesort = $firstnamesort;
+        $this->url = $url;
     }
 
     /**
@@ -134,8 +148,24 @@ class report implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         global $OUTPUT;
+        $pageurl = (new moodle_url('/report/progress/index.php', [
+            'course' => $this->courseid,
+            'sesskey' => sesskey(),
+        ]))->out(false);
+        $sorturl = fullclone($this->url);
+        $firstnamelastnameheading = '';
+        if ($this->firstnamesort) {
+            $sorturl->param('sort', 'lastname');
+            $sortlink = \html_writer::link($sorturl, get_string('lastname'));
+            $firstnamelastnameheading = get_string('firstname') . " / $sortlink";
+        } else {
+            $sorturl->param('sort', 'firstname');
+            $sortlink = \html_writer::link($sorturl, get_string('firstname'));
+            $firstnamelastnameheading = "$sortlink / " . get_string('lastname');
+        }
         return [
             'title' => get_string('coursecompletion'),
+            'firstnamelastnameheading' => $firstnamelastnameheading,
             'totalparticipants' => get_string('allparticipants') . ": {$this->totalparticipants}",
             'leftcols' => $this->leftcols == '' ? 1 : $this->leftcols,
             'criteriaheaders' => $this->engine->criteria_types(),
