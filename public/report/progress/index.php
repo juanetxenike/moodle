@@ -45,17 +45,16 @@ define('COMPLETION_REPORT_COL_TITLES', true);
 
 // GET PARAMETERS.
 $courseid = required_param('course', PARAM_INT);
-$format = optional_param('format', '', PARAM_ALPHA);
+$dataformat = optional_param('dataformat', '', PARAM_ALPHA);
+$page = optional_param('page', 0, PARAM_INT);
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+
 $context = course::instance($course->id);
 $url = new moodle_url('/report/progress/index.php', ['course' => $course->id]);
 
 if (!$course) {
     throw new moodle_exception(errorcode: 'invalidcourseid');
 }
-
-$excel = ($format == 'excelcsv');
-$csv = ($format == 'csv' || $excel);
 
 $activityinclude = optional_param('activityinclude', 'all', PARAM_TEXT);
 $activityorder = optional_param('activityorder', 'orderincourse', PARAM_TEXT);
@@ -89,7 +88,7 @@ list($activitytypes, $activities) = helper::get_activities_to_show($completion, 
 // Generate where clause.
 // The following variables will be used as a part of a sql query within the get_progress_all function.
 // This function gets parts of the query as parameters and returns a list of users with their completion status.
-$page = optional_param('page', 0, PARAM_INT);
+
 $sifirst = optional_param('sifirst', 'all', PARAM_NOTAGS);
 $silast  = optional_param('silast', 'all', PARAM_NOTAGS);
 $preferences = ['ifirst' => $sifirst, 'ilast' => $silast];
@@ -137,40 +136,49 @@ if ($total) {
         $whereparams,
         $group,
         $firstnamesort ? 'u.firstname ASC, u.lastname ASC' : 'u.lastname ASC, u.firstname ASC',
-        0,
-        0,
+        $dataformat ? 0 : helper::COMPLETION_REPORT_PAGE,
+        $dataformat ? 0 : $page * helper::COMPLETION_REPORT_PAGE,
         $context
     );
 }
 
-if ($csv) {
+if ($dataformat !== '' && $grandtotal && count($activities) > 0) {
     $shortname = format_string($course->shortname, true, ['context' => $context]);
     $shortname = preg_replace('/[^a-z0-9-]/', '_', core_text::strtolower(strip_tags($shortname)));
     require_once("{$CFG->libdir}/csvlib.class.php");
     $export = new csv_export_writer('comma', '"', 'application/download', $excel);
     $export->set_filename('progress-' . $shortname);
 
-    $headerrow = [];
+    $columnnames = [''];
+    $alldata = [];
     $headerrow[] = get_string('completion', 'completion');
     foreach ($extrafields as $field) {
         $headerrow[] = \core_user\fields::get_display_name($field);
     }
 
     foreach ($activities as $activity) {
-        $datetext = $activity->completionexpected ? userdate($activity->completionexpected, "%F %T") : '';
+        // Handling date display formatting.
+        if ($activity->completionexpected) {
+            $datetext = $dataformat
+                ? userdate($activity->completionexpected, "%F %T")
+                : userdate($activity->completionexpected, get_string('strftimedate', 'langconfig'));
+        } else {
+            $datetext = '';
+        }
         $displayname = format_string($activity->name, true, ['context' => $activity->context]);
-        $headerrow[] = $displayname;
-        $headerrow[] = $datetext;
+        $columnnames[] = $displayname;
+        $columnnames[] = $datetext;
     }
 
-    $export->add_data($row);
+    //$export->add_data($row);
 
     foreach ($progress as $user) {
-        $usersrow = [];
-        $usersrow[] = fullname($user, has_capability('moodle/site:viewfullnames', $context));
+        $row = [];
+        $activityrow[] = fullname($user, has_capability('moodle/site:viewfullnames', $context));
         foreach ($extrafields as $field) {
-            $usersrow[] = $user->{$field};
+            $row[] = $user->{$field};
         }
+        $i = 0;
         foreach ($activities as $activity) {
             $state = COMPLETION_INCOMPLETE;
             $overrideby = 0;
@@ -179,7 +187,9 @@ if ($csv) {
                 $thisprogress = $user->progress[$activity->id];
                 $state = $thisprogress->completionstate;
                 $overrideby = $thisprogress->overrideby;
-                $date = userdate($thisprogress->timemodified);
+            } else {
+                $overrideby = 0;
+                $state = COMPLETION_INCOMPLETE;
             }
             // Work out how it corresponds to an icon.
             switch ($state) {
@@ -202,18 +212,37 @@ if ($csv) {
                 $describe = get_string('completion-' . $completiontype, 'completion', fullname($overridebyuser));
             }
             $date = ($date != '') ? userdate($thisprogress->timemodified, "%F %T") : '';
-            $usersrow[] = $describe . ' ' . $date;
+            $row[$i++] = $describe;
+            $row[$i++] = $date;
         }
-        $export->add_data($usersrow);
+        $alldata[] = $row;
     }
-    $export->download_file();
-    exit;
+    // Download the data in the specified format.
+    \core\dataformat::download_data(
+        'progress.' . preg_replace(
+            '/[^a-z0-9-]/',
+            '_',
+            core_text::strtolower(
+                strip_tags(
+                    format_string(
+                        $course->shortname,
+                        true,
+                        ['context' => $context]
+                    )
+                )
+            )
+        ),
+        $dataformat,
+        $columnnames,
+        $alldata
+    );
+    die;
 }
 
 // CREATE HTML.
 $renderable = new report(
     $courseid,
-    $format,
+    $dataformat,
     $activityinclude,
     $activityorder,
     $activitysection,
@@ -224,13 +253,13 @@ $renderable = new report(
 $renderer = $PAGE->get_renderer('report_progress');
 $html = $renderer->render_activity_completion_report($renderable);
 
-if ($format == 'pdf') {
+if ($dataformat == 'pdf') {
     require_once("{$CFG->libdir}/pdflib.php");
     // SEND TO PDF OUTPUT.
     $pdf = new course_report_pdf();
     $pdf->writeHTML($html);
     $pdf->Output('progress.pdf', 'I');
-    exit;
+    die;
 }
 
 // PAGE SETUP.

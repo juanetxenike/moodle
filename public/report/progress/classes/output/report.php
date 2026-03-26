@@ -189,9 +189,9 @@ class report implements renderable, templatable {
             'sectionheaders' => (array) $progressengine->section_headers($this->activities),
             'activityicons' => $progressengine->activity_icons($this->activities, $this->format),
             'ishtml' => ($this->format != 'csv' && $this->format != 'pdf' && $this->format != 'excelcsv') ? true : false,
-            'csvurl' => (new moodle_url('/report/progress/index.php', ['course' => $this->courseid, 'format' => 'csv']))->out(),
-            'excelurl' => new moodle_url('/report/progress/index.php', ['course' => $this->courseid, 'format' => 'excelcsv']),
-            'pdfurl' => new moodle_url('/report/progress/index.php', ['course' => $this->courseid, 'format' => 'pdf']),
+            'csvurl' => (new moodle_url('/report/progress/index.php', ['course' => $this->courseid, 'dataformat' => 'csv']))->out(),
+            'excelurl' => new moodle_url('/report/progress/index.php', ['course' => $this->courseid, 'dataformat' => 'excelcsv']),
+            'pdfurl' => new moodle_url('/report/progress/index.php', ['course' => $this->courseid, 'dataformat' => 'pdf']),
         ];
     }
 }
